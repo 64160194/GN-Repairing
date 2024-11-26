@@ -52,6 +52,30 @@
                             <div class="card-body">
                                 <form>
                                     <div class="mb-3">
+                                        <label for="userName"
+                                            class="form-label d-flex justify-content-between align-items-center">
+                                            ชื่อ - นามสกุล
+                                            <small class="text-muted">Full Name</small>
+                                        </label>
+                                        <input type="text" class="form-control" id="userName" value="<%= userInfo.f_name %> <%= userInfo.l_name %>" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="userDepartment"
+                                            class="form-label d-flex justify-content-between align-items-center">
+                                            แผนก
+                                            <small class="text-muted">Department</small>
+                                        </label>
+                                        <input type="text" class="form-control" id="userDepartment" value="<%= userInfo.dept_name %>" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="userEmail"
+                                            class="form-label d-flex justify-content-between align-items-center">
+                                            อีเมลล์
+                                            <small class="text-muted">Email</small>
+                                        </label>
+                                        <input type="text" class="form-control" id="userEmail" value="<%= userInfo.u_mail %>" readonly>
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="repairList"
                                             class="form-label d-flex justify-content-between align-items-center">
                                             รายการแจ้งซ่อม
