@@ -13,7 +13,7 @@ app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true } // set to true if using https
+  cookie: { secure: false }
 }));
 
 // ตั้งค่า view engine เป็น EJS
@@ -36,6 +36,9 @@ app.use(session({
 // Import routes
 const loginRoutes = require('./routes/loginRoutes');
 app.use('/', loginRoutes);
+
+const userHomeRoutes = require('./routes/userHomeRoutes');
+app.use('/user_home', userHomeRoutes);
 
 // เริ่ม server
 app.listen(port, () => {
