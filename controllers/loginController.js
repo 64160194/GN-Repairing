@@ -1,5 +1,4 @@
 const LoginModel = require('../models/loginModel');
-
 const loginController = {
   showLoginPage: (req, res) => {
     res.render('login', { title: 'Login', error: null });
@@ -10,8 +9,20 @@ const loginController = {
     try {
       const user = await LoginModel.authenticateUser(username, password);
       if (user) {
-        req.session.userId = user.u_id; // เก็บ u_id ใน session
-        res.redirect('/user_home');
+        req.session.userId = user.u_id;
+        req.session.role = user.role_id;
+
+        // Redirect based on user role
+        switch (user.role_id) {
+          case 1:
+            res.redirect('/request_admin');
+            break;
+          case 3:
+            res.redirect('/user_home');
+            break;
+          default:
+            res.redirect('/default_home'); // You might want to create a default home page for other roles
+        }
       } else {
         res.render('login', { title: 'Login', error: 'Invalid username or password' });
       }

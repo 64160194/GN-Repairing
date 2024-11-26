@@ -40,6 +40,9 @@ app.use('/', loginRoutes);
 const userHomeRoutes = require('./routes/userHomeRoutes');
 app.use('/user_home', userHomeRoutes);
 
+const requestAdminRoutes = require('./routes/requestAdminRoutes');
+app.use('/request_admin', requestAdminRoutes);
+
 // เริ่ม server
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
