@@ -50,14 +50,15 @@
                                 สำหรับผู้แจ้งซ่อม
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="POST" action="/add_request" enctype="multipart/form-data">
                                     <div class="mb-3">
                                         <label for="userName"
                                             class="form-label d-flex justify-content-between align-items-center">
                                             ชื่อ - นามสกุล
                                             <small class="text-muted">Full Name</small>
                                         </label>
-                                        <input type="text" class="form-control" id="userName" value="<%= userInfo.f_name %> <%= userInfo.l_name %>" readonly>
+                                        <input type="text" class="form-control" id="userName"
+                                            value="<%= userInfo.f_name %> <%= userInfo.l_name %>" readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label for="userDepartment"
@@ -65,7 +66,8 @@
                                             แผนก
                                             <small class="text-muted">Department</small>
                                         </label>
-                                        <input type="text" class="form-control" id="userDepartment" value="<%= userInfo.dept_name %>" readonly>
+                                        <input type="text" class="form-control" id="userDepartment"
+                                            value="<%= userInfo.dept_name %>" readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label for="userEmail"
@@ -73,7 +75,8 @@
                                             อีเมลล์
                                             <small class="text-muted">Email</small>
                                         </label>
-                                        <input type="text" class="form-control" id="userEmail" value="<%= userInfo.u_mail %>" readonly>
+                                        <input type="text" class="form-control" id="userEmail"
+                                            value="<%= userInfo.u_mail %>" readonly>
                                     </div>
                                     <div class="mb-3">
                                         <label for="repairList"
@@ -81,8 +84,8 @@
                                             รายการแจ้งซ่อม
                                             <small class="text-muted">List of repairs</small>
                                         </label>
-                                        <textarea class="form-control" id="repairList" rows="2"
-                                            placeholder="กรุณากรอกรายการที่ต้องการแจ้งซ่อม"></textarea>
+                                        <textarea class="form-control" id="repairList" name="repairList" rows="2"
+                                            placeholder="กรุณากรอกรายการที่ต้องการแจ้งซ่อม" required></textarea>
                                     </div>
 
                                     <div class="mb-3">
@@ -91,8 +94,8 @@
                                             อาการ/ลักษณะการชำรุด
                                             <small class="text-muted">Nature of the defect</small>
                                         </label>
-                                        <textarea class="form-control" id="repairSymptoms" rows="3"
-                                            placeholder="กรุณากรอกอาการหรือลักษณะการชำรุด"></textarea>
+                                        <textarea class="form-control" id="repairSymptoms" name="repairSymptoms"
+                                            rows="3" placeholder="กรุณากรอกอาการหรือลักษณะการชำรุด" required></textarea>
                                     </div>
 
                                     <div class="mb-3">
@@ -101,8 +104,8 @@
                                             สถานที่
                                             <small class="text-muted">Location</small>
                                         </label>
-                                        <textarea class="form-control" id="location" rows="1"
-                                            placeholder="กรุณากรอกสถานที่"></textarea>
+                                        <textarea class="form-control" id="location" name="location" rows="1"
+                                            placeholder="กรุณากรอกสถานที่" required></textarea>
                                     </div>
 
                                     <div class="mb-3">
@@ -111,39 +114,63 @@
                                             <small class="text-muted">Repair Type</small>
                                         </label>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="repairType" id="facility" value="facility">
+                                            <input class="form-check-input" type="radio" name="repairType" id="facility"
+                                                value="facility">
                                             <label class="form-check-label" for="facility">
                                                 1. อาคารสถานที่ (Facility)
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="repairType" id="utility" value="utility">
+                                            <input class="form-check-input" type="radio" name="repairType" id="utility"
+                                                value="utility">
                                             <label class="form-check-label" for="utility">
                                                 2. สาธารณูปโภค (Utility)
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="repairType" id="electrical" value="electrical">
+                                            <input class="form-check-input" type="radio" name="repairType"
+                                                id="electrical" value="electrical">
                                             <label class="form-check-label" for="electrical">
                                                 3. ระบบไฟฟ้า (Electrical System)
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="repairType" id="other" value="other">
+                                            <input class="form-check-input" type="radio" name="repairType" id="other"
+                                                value="other">
                                             <label class="form-check-label" for="other">
                                                 4. อื่น ๆ (Other)
                                             </label>
                                         </div>
                                         <div id="otherRepairTypeInput" class="mt-2" style="display: none;">
-                                            <input type="text" class="form-control" id="otherRepairTypeText" placeholder="กรุณาระบุประเภทการซ่อม">
+                                            <input type="text" class="form-control" id="otherRepairTypeText"
+                                                name="otherRepairTypeText" placeholder="กรุณาระบุประเภทการซ่อม">
                                         </div>
                                     </div>
 
+                                    <div class="mb-3">
+                                        <label for="image1"
+                                            class="form-label d-flex justify-content-between align-items-center">
+                                            รูปภาพที่ 1 (จำเป็น)
+                                            <small class="text-muted">Image 1 (Required)</small>
+                                        </label>
+                                        <input type="file" class="form-control" id="image1" name="image1"
+                                            accept="image/*" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="image2"
+                                            class="form-label d-flex justify-content-between align-items-center">
+                                            รูปภาพที่ 2 (ไม่จำเป็น)
+                                            <small class="text-muted">Image 2 (Optional)</small>
+                                        </label>
+                                        <input type="file" class="form-control" id="image2" name="image2"
+                                            accept="image/*">
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary">ส่งคำขอ</button>
+                                    </div>
                                 </form>
-                                <hr>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">ส่งคำขอ</button>
-                                </div>
                             </div>
                         </div>
                     </div>
