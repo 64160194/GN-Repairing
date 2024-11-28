@@ -26,8 +26,8 @@ const addRequestModel = {
     return new Promise((resolve, reject) => {
       const query = `
         INSERT INTO tbl_requests 
-        (u_id, repair_item, sympton_def, location_n, repair_type, other_type, r_pic1, r_pic2, date_time)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+        (u_id, repair_item, sympton_def, location_n, repair_type, other_type, r_pic1, r_pic2, r_pic3, date_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
       `;
 
       const values = [
@@ -38,7 +38,8 @@ const addRequestModel = {
         requestData.repair_type,
         requestData.other_type,
         requestData.r_pic1,
-        requestData.r_pic2
+        requestData.r_pic2,
+        requestData.r_pic3
       ];
 
       db.query(query, values, (error, results) => {
@@ -48,9 +49,7 @@ const addRequestModel = {
         resolve(results.insertId);
       });
     });
-  } ,
-  
+  }
 };
-
 
 module.exports = addRequestModel;

@@ -44,7 +44,7 @@ const requestAdminRoutes = require('./routes/requestAdminRoutes');
 app.use('/request_admin', requestAdminRoutes);
 
 const addRequestRoutes = require('./routes/addRequestRoutes');
-app.use('/', addRequestRoutes);
+app.use('/add_request', addRequestRoutes);
 
 // เริ่ม server
 app.listen(port, () => {

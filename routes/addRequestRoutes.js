@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const addRequestController = require('../controllers/addRequestController');
-const multer = require('multer');
-const upload = multer({ dest: 'public/uploads/' });
+const authMiddleware = require('../middlewares/authMiddleware');
+const roleMiddleware = require('../middlewares/roleMiddleware');
 
-router.get('/add_request', addRequestController.showAddRequestPage);
-router.post('/add_request', upload.fields([{ name: 'image1', maxCount: 1 }, { name: 'image2', maxCount: 1 }]), addRequestController.processAddRequest);
+router.get('/', authMiddleware, roleMiddleware(3), addRequestController.showAddRequestPage);
+router.post('/', authMiddleware, roleMiddleware(3), addRequestController.processAddRequest);
 
 module.exports = router;

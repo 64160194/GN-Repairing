@@ -1,11 +1,11 @@
 const roleMiddleware = (requiredRole) => {
   return (req, res, next) => {
-    if (req.user && req.user.role_id === requiredRole) {
+    if (req.user && req.user.role_id === parseInt(requiredRole)) {
       next();
     } else {
-      res.status(403).render('unauthorized', { 
+      res.status(403).render('unauthorized', {
         title: 'Unauthorized Access',
-        message: 'You do not have the required role to access this page'
+        message: 'คุณไม่มีสิทธิ์เข้าถึงการใช้งาน โปรดเข้าสู่ระบบใหม่อีกครั้ง'
       });
     }
   };

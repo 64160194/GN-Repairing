@@ -21,7 +21,7 @@ const loginController = {
             res.redirect('/user_home');
             break;
           default:
-            res.redirect('/default_home'); // You might want to create a default home page for other roles
+            res.redirect('/default_home'); 
         }
       } else {
         res.render('login', { title: 'Login', error: 'Invalid username or password' });

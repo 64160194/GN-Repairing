@@ -12,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
       console.error('Auth middleware error:', error);
     }
   }
-  res.redirect('/login');
+  res.redirect('/');
 };
 
 module.exports = authMiddleware;
