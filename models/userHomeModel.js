@@ -41,7 +41,27 @@ const UserHomeModel = {
 
   getUserById: (userId) => {
     return UserHomeModel.getUserInfo(userId);
+  },
+
+  getRequests: (userId) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT req_id, repair_item, repair_type, date_time
+        FROM tbl_requests
+        WHERE u_id = ?
+        ORDER BY date_time DESC
+        LIMIT 10
+      `;
+      
+      db.query(query, [userId], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
   }
+
 };
 
 module.exports = UserHomeModel;

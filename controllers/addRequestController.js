@@ -43,10 +43,10 @@ const addRequestController = {
         const newRequestId = await addRequestModel.addRequest(requestData);
         console.log('New request added with ID:', newRequestId);
 
-        req.session.flash = { success: 'Your request has been submitted successfully!' };
+        req.session.flash = { success: 'ได้ทำการบันทึกคำร้องขอแจ้งซ่อมของคุณแล้ว !' };
         res.redirect('/user_home');
       } catch (error) {
-        console.error('Error submitting request:', error);
+        console.error('ไม่สามารถทำการบันทึกคำร้องขอแจ้งซ่อมของคุณได้', error);
         req.session.flash = { error: 'An error occurred while submitting the request' };
         res.redirect('/add_request');
       }
