@@ -46,6 +46,10 @@ app.use('/request_admin', requestAdminRoutes);
 const addRequestRoutes = require('./routes/addRequestRoutes');
 app.use('/add_request', addRequestRoutes);
 
+const detailsRepairingRoutes = require('./routes/detailsRepairingRoutes');
+app.use('/details_repairing', detailsRepairingRoutes);
+
+
 // เริ่ม server
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
