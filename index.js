@@ -47,6 +47,12 @@ app.use('/request_mgr', requestMgrRoutes);
 const memberUserRoutes = require('./routes/memberUserRoutes');
 app.use('/member_user', memberUserRoutes);
 
+const memberAdminRoutes = require('./routes/memberAdminRoutes');
+app.use('/member_admin', memberAdminRoutes);
+
+const manageDeptRoutes = require('./routes/manageDeptRoutes');
+app.use('/manage_dept', manageDeptRoutes);
+
 // เริ่ม server
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
