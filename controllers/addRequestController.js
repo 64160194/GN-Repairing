@@ -26,8 +26,6 @@ const addRequestController = {
     async (req, res) => {
       console.log('processAddRequest function called');
       try {
-        console.log('Form data:', req.body);
-        console.log('Files:', req.files);
 
         const requestData = {
           u_id: req.session.userId,
@@ -47,31 +45,26 @@ const addRequestController = {
               try {
   
                 const resizedBuffer = await sharp(buffer)
-                .resize(800, null, { // กำหนดขนาดความกว้างสูงสุด 800px, คำนวณความสูงอัตโนมัติ
+                .resize(900, null, { 
                   fit: 'inside',
-                  withoutEnlargement: true // ไม่ขยายรูปภาพให้ใหญ่ขึ้นหากขนาดเล็กกว่า 800px อยู่แล้ว
+                  withoutEnlargement: true
                 })
                 .jpeg({ quality: 80 }) // แปลงเป็น JPEG คุณภาพ 80 (ปรับค่าได้ตามต้องการ)
                 .toBuffer();
-                  return resizedBuffer; // ส่งคืน buffer รูปภาพที่ถูกบีบอัดแล้ว
+                  return resizedBuffer;
               } catch (error) {
                 console.log('เกิดข้อผิดพลาดขณะบีบอัดรูปภาพ', error)
                 return null
               }
             }
-             return null; // ไม่มีรูปภาพให้ประมวลผล
+             return null;
          };
   
           requestData.r_pic1 = await processImage(req.files['image1']);
           requestData.r_pic2 = await processImage(req.files['image2']);
           requestData.r_pic3 = await processImage(req.files['image3']);
   
-  
-  
-        console.log('Request data to be saved:', requestData);
         const newRequestId = await addRequestModel.addRequest(requestData);
-        
-        console.log('New request added with ID:', newRequestId);
 
         req.session.flash = { success: 'ได้ทำการบันทึกคำร้องขอแจ้งซ่อมของคุณแล้ว !' };
         res.redirect('/user_home');

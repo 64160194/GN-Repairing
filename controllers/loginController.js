@@ -20,6 +20,9 @@ const loginController = {
           case 3:
             res.redirect('/user_home');
             break;
+          case 4:
+            res.redirect('/request_mgr');
+            break;
           default:
             res.redirect('/default_home'); 
         }

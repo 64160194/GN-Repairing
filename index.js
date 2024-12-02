@@ -49,6 +49,9 @@ app.use('/add_request', addRequestRoutes);
 const detailsRepairingRoutes = require('./routes/detailsRepairingRoutes');
 app.use('/details_repairing', detailsRepairingRoutes);
 
+const requestMgrRoutes = require('./routes/requestMgrRoutes');
+app.use('/request_mgr', requestMgrRoutes);
+
 
 // เริ่ม server
 app.listen(port, () => {
