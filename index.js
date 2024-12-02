@@ -13,7 +13,7 @@ app.use(session({
   secret: 'your_secret_key',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }
+  cookie: { secure: process.env.NODE_ENV === 'production' }
 }));
 
 // ตั้งค่า view engine เป็น EJS
@@ -24,14 +24,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// ตั้งค่า session
-app.use(session({
-  secret: 'your_session_secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // ตั้งเป็น true ถ้าใช้ HTTPS
-}));
 
 // Import routes
 const loginRoutes = require('./routes/loginRoutes');
