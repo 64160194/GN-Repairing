@@ -60,16 +60,16 @@ const manageDeptController = {
         try {
             const { deptId, deptName } = req.body;
             const result = await manageDeptModel.updateDepartment(deptId, deptName);
-            if (result && result.affectedRows > 0) {
-                res.json({ success: true, message: 'แผนกถูกอัปเดตเรียบร้อยแล้ว' });
+            if (result) {
+                res.json({ success: true, message: 'Department updated successfully' });
             } else {
-                res.status(400).json({ success: false, message: 'ไม่สามารถอัปเดตแผนกได้' });
+                res.json({ success: false, message: 'ไม่สามารถอัปเดตแผนกได้' });
             }
         } catch (error) {
             console.error('Error updating department:', error);
             res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการอัปเดตแผนก' });
         }
-    },
+    }
 };
 
 module.exports = manageDeptController;
