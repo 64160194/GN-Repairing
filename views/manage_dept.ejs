@@ -89,37 +89,31 @@
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Department ID</th>
                                                 <th>Department Name</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <% departments.forEach(function(dept) { %>
-                                                <tr>
-                                                    <td>
-                                                        <%= dept.dept_id %>
-                                                    </td>
-                                                    <td>
-                                                        <%= dept.dept_name %>
-                                                    </td>
-                                                    <td>
-                                                        <button class="btn btn-outline-primary btn-sm edit-dept"
-                                                            data-id="<%= dept.dept_id %>"
-                                                            data-name="<%= dept.dept_name %>" title="แก้ไข">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                        <button class="btn btn-outline-danger btn-sm change-dept-status"
-                                                            data-id="<%= dept.dept_id %>" 
-                                                            data-name="<%= dept.dept_name %>"
-                                                            data-status="<%= dept.dept_status %>"
-                                                            title="<%= dept.dept_status === 1 ? 'ยกเลิกการใช้งาน' : 'เปิดใช้งาน' %>">
-                                                            <i class="fas <%= dept.dept_status === 1 ? 'fa-check-circle text-success' : 'fa-times-circle text-danger' %>"></i>
-                                                            <%= dept.dept_status === 1 ? 'เปิดใช้งาน' : 'ปิดใช้งาน' %>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                <% }); %>
+                                                <% if (dept.dept_status === 1) { %>
+                                                    <tr>
+                                                        <td><%= dept.dept_name %></td>
+                                                        <td>
+                                                            <button class="btn btn-outline-primary btn-sm edit-dept"
+                                                                data-id="<%= dept.dept_id %>"
+                                                                data-name="<%= dept.dept_name %>" title="แก้ไข">
+                                                                <i class="fas fa-edit"></i> แก้ไขชื่อ
+                                                            </button>
+                                                            <button class="btn btn-outline-danger btn-sm delete-dept"
+                                                                data-id="<%= dept.dept_id %>" 
+                                                                data-name="<%= dept.dept_name %>"
+                                                                title="ลบแผนก">
+                                                                <i class="fas fa-trash-can"></i> ลบแผนก
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                <% } %>
+                                            <% }); %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -129,9 +123,6 @@
             </main>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
-    <script src="js/manage_dept.js"></script>
 
     <div class="modal fade" id="editDeptModal" tabindex="-1" aria-labelledby="editDeptModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -152,6 +143,10 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <script src="js/manage_dept.js"></script>
 
 </body>
 

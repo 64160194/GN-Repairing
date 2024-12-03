@@ -3,7 +3,7 @@ const db = require('../config/database');
 const manageDeptModel = {
     getAllDepartments: () => {
         return new Promise((resolve, reject) => {
-            const query = 'SELECT * FROM tbl_dept ORDER BY dept_id ASC';
+            const query = 'SELECT * FROM tbl_dept WHERE dept_status = 1 ORDER BY dept_name ASC';
             db.query(query, (error, results) => {
                 if (error) {
                     reject(error);
@@ -16,7 +16,7 @@ const manageDeptModel = {
 
     addDepartment: (name) => {
         return new Promise((resolve, reject) => {
-            const query = 'INSERT INTO tbl_dept (dept_name) VALUES (?)';
+            const query = 'INSERT INTO tbl_dept (dept_name, dept_status) VALUES (?, 1)';
             db.query(query, [name], (error, results) => {
                 if (error) {
                     reject(error);
@@ -29,25 +29,13 @@ const manageDeptModel = {
 
     deleteDepartment: (id) => {
         return new Promise((resolve, reject) => {
-            const query = 'DELETE FROM tbl_dept WHERE dept_id = ?';
+            const query = 'UPDATE tbl_dept SET dept_status = 0 WHERE dept_id = ?';
             db.query(query, [id], (error, results) => {
                 if (error) {
                     reject(error);
                 } else {
                     resolve(results);
                 }
-            });
-        });
-    },
-
-    updateDeptStatus: (deptId, newStatus) => {
-        return new Promise((resolve, reject) => {
-            const query = 'UPDATE tbl_dept SET dept_status = ? WHERE dept_id = ?';
-            db.query(query, [newStatus, deptId], (error, results) => {
-                if (error) {
-                    return reject(error);
-                }
-                resolve(results);
             });
         });
     },
@@ -60,6 +48,19 @@ const manageDeptModel = {
                     reject(error);
                 } else {
                     resolve(results.affectedRows > 0);
+                }
+            });
+        });
+    },
+
+    getDepartmentById: (id) => {
+        return new Promise((resolve, reject) => {
+            const query = 'SELECT * FROM tbl_dept WHERE dept_id = ?';
+            db.query(query, [id], (error, results) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(results[0]);
                 }
             });
         });

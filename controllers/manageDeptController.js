@@ -19,32 +19,40 @@ const manageDeptController = {
         try {
             const { name } = req.body;
             const result = await manageDeptModel.addDepartment(name);
-            res.json({ success: true, message: 'Department added successfully', id: result.insertId });
+            res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: result.insertId });
         } catch (error) {
             console.error('Error adding department:', error);
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเพิ่มแผนก' });
         }
     },
 
     deleteDepartment: async (req, res) => {
         try {
-            const { id } = req.params;
-            await manageDeptModel.deleteDepartment(id);
-            res.json({ success: true, message: 'Department deleted successfully' });
+            const { deptId } = req.body;
+            const result = await manageDeptModel.deleteDepartment(deptId);
+            if (result && result.affectedRows > 0) {
+                res.json({ success: true, message: 'แผนกถูกลบเรียบร้อยแล้ว' });
+            } else {
+                res.status(400).json({ success: false, message: 'ไม่สามารถลบแผนกได้' });
+            }
         } catch (error) {
             console.error('Error deleting department:', error);
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการลบแผนก' });
         }
     },
 
     toggleDepartmentStatus: async (req, res) => {
         try {
             const { id } = req.params;
-            await manageDeptModel.toggleDepartmentStatus(id);
-            res.json({ success: true, message: 'Department status toggled successfully' });
+            const result = await manageDeptModel.toggleDepartmentStatus(id);
+            if (result && result.affectedRows > 0) {
+                res.json({ success: true, message: 'สถานะแผนกถูกเปลี่ยนเรียบร้อยแล้ว' });
+            } else {
+                res.status(400).json({ success: false, message: 'ไม่สามารถเปลี่ยนสถานะแผนกได้' });
+            }
         } catch (error) {
             console.error('Error toggling department status:', error);
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเปลี่ยนสถานะแผนก' });
         }
     },
 
@@ -52,32 +60,16 @@ const manageDeptController = {
         try {
             const { deptId, deptName } = req.body;
             const result = await manageDeptModel.updateDepartment(deptId, deptName);
-            if (result) {
-                res.json({ success: true, message: 'Department updated successfully' });
+            if (result && result.affectedRows > 0) {
+                res.json({ success: true, message: 'แผนกถูกอัปเดตเรียบร้อยแล้ว' });
             } else {
-                res.json({ success: false, message: 'ไม่สามารถอัปเดตแผนกได้' });
+                res.status(400).json({ success: false, message: 'ไม่สามารถอัปเดตแผนกได้' });
             }
         } catch (error) {
             console.error('Error updating department:', error);
             res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการอัปเดตแผนก' });
         }
     },
-
-    changeDeptStatus: async (req, res) => {
-        try {
-            const { deptId, newStatus } = req.body;
-            const result = await manageDeptModel.updateDeptStatus(deptId, newStatus);
-            if (result.affectedRows > 0) {
-                res.json({ success: true, message: 'สถานะแผนกถูกเปลี่ยนเรียบร้อยแล้ว' });
-            } else {
-                res.json({ success: false, message: 'ไม่สามารถเปลี่ยนสถานะแผนกได้' });
-            }
-        } catch (error) {
-            console.error('Error changing department status:', error);
-            res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเปลี่ยนสถานะแผนก' });
-        }
-    },
-
 };
 
 module.exports = manageDeptController;

@@ -20,12 +20,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const deptId = editDeptId.value;
         const newDeptName = editDeptName.value;
 
-        fetch('/manage_dept/edit', {
+        fetch('/manage_dept/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ deptId, newDeptName }),
+            body: JSON.stringify({ deptId, deptName: newDeptName }),
         })
         .then(response => response.json())
         .then(data => {
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถแก้ไขชื่อแผนกได้',
+                    text: data.message || 'ไม่สามารถแก้ไขชื่อแผนกได้',
                 });
             }
         })
@@ -57,26 +57,80 @@ document.addEventListener('DOMContentLoaded', function() {
         editModal.hide();
     });
 
-    document.getElementById('saveDeptChanges').addEventListener('click', function() {
-        const deptId = document.getElementById('editDeptId').value;
-        const deptName = document.getElementById('editDeptName').value;
+    document.querySelectorAll('.delete-dept').forEach(button => {
+        button.addEventListener('click', function() {
+            const deptId = this.getAttribute('data-id');
+            const deptName = this.getAttribute('data-name');
+            
+            Swal.fire({
+                title: 'คุณแน่ใจหรือไม่?',
+                text: `คุณต้องการลบแผนก "${deptName}" ใช่หรือไม่?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ลบเลย!',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/manage_dept/delete', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ deptId: deptId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'ลบแล้ว!',
+                                'แผนกถูกลบเรียบร้อยแล้ว',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            throw new Error(data.message || 'ไม่สามารถลบแผนกได้');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'เกิดข้อผิดพลาด!',
+                            error.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                            'error'
+                        );
+                    });
+                }
+            });
+        });
+    });
+    
+    // เพิ่มฟังก์ชันสำหรับการเพิ่มแผนกใหม่
+    document.getElementById('addDeptForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newDeptName = document.getElementById('newDeptName').value;
 
-        fetch('/manage_dept/update', {
+        fetch('/manage_dept/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ deptId, deptName }),
+            body: JSON.stringify({ deptName: newDeptName }),
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'สำเร็จ',
-                    text: 'บันทึกการแก้ไขเรียบร้อยแล้ว',
-                    showConfirmButton: false,
-                    timer: 1500
+                    title: 'เพิ่มแผนกสำเร็จ',
+                    text: 'แผนกใหม่ถูกเพิ่มเรียบร้อยแล้ว',
                 }).then(() => {
                     location.reload();
                 });
@@ -84,76 +138,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
-                    text: 'ไม่สามารถบันทึกการแก้ไขได้: ' + data.message,
+                    text: data.message || 'ไม่สามารถเพิ่มแผนกได้',
                 });
             }
         })
-        .catch((error) => {
+        .catch(error => {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'เกิดข้อผิดพลาด',
                 text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
-            });
-        });
-    });
-
-    // เพิ่มโค้ดใหม่สำหรับการเปลี่ยนสถานะแผนก
-    const changeDeptStatusButtons = document.querySelectorAll('.change-dept-status');
-    
-    changeDeptStatusButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const deptId = this.getAttribute('data-id');
-            const deptName = this.getAttribute('data-name');
-            const currentStatus = parseInt(this.getAttribute('data-status'));
-            const newStatus = currentStatus === 1 ? 0 : 1;
-            const actionText = currentStatus === 1 ? 'ยกเลิกการใช้งาน' : 'เปิดใช้งาน';
-
-            Swal.fire({
-                title: `คุณต้องการ${actionText}แผนก "${deptName}" ใช่หรือไม่?`,
-                text: `การดำเนินการนี้จะ${actionText}แผนกนี้`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'ใช่, ดำเนินการ',
-                cancelButtonText: 'ยกเลิก'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/manage_dept/change-status', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ deptId, newStatus }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire(
-                                'สำเร็จ!',
-                                `${actionText}แผนกเรียบร้อยแล้ว`,
-                                'success'
-                            ).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire(
-                                'เกิดข้อผิดพลาด!',
-                                'ไม่สามารถดำเนินการได้ กรุณาลองใหม่อีกครั้ง',
-                                'error'
-                            );
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire(
-                            'เกิดข้อผิดพลาด!',
-                            'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
-                            'error'
-                        );
-                    });
-                }
             });
         });
     });
