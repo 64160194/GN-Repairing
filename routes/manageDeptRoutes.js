@@ -13,6 +13,7 @@ router.post('/add', authMiddleware, roleMiddleware(1), manageDeptController.addD
 // อัปเดตข้อมูลแผนก
 router.post('/update', authMiddleware, roleMiddleware(1), manageDeptController.updateDepartment);
 
+router.post('/change-status', manageDeptController.changeDeptStatus);
 // ลบแผนก
 router.delete('/delete/:id', authMiddleware, roleMiddleware(1), manageDeptController.deleteDepartment);
 

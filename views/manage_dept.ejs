@@ -97,18 +97,29 @@
                                         <tbody>
                                             <% departments.forEach(function(dept) { %>
                                                 <tr>
-                                                    <td><%= dept.dept_id %></td>
-                                                    <td><%= dept.dept_name %></td>
                                                     <td>
-                                                        <button class="btn btn-outline-primary btn-sm edit-dept" data-id="<%= dept.dept_id %>" data-name="<%= dept.dept_name %>" title="แก้ไข">
+                                                        <%= dept.dept_id %>
+                                                    </td>
+                                                    <td>
+                                                        <%= dept.dept_name %>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-outline-primary btn-sm edit-dept"
+                                                            data-id="<%= dept.dept_id %>"
+                                                            data-name="<%= dept.dept_name %>" title="แก้ไข">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
-                                                        <button class="btn btn-outline-danger btn-sm delete-dept" data-id="<%= dept.dept_id %>" title="ลบ">
-                                                            <i class="fas fa-trash-alt"></i>
+                                                        <button class="btn btn-outline-danger btn-sm change-dept-status"
+                                                            data-id="<%= dept.dept_id %>" 
+                                                            data-name="<%= dept.dept_name %>"
+                                                            data-status="<%= dept.dept_status %>"
+                                                            title="<%= dept.dept_status === 1 ? 'ยกเลิกการใช้งาน' : 'เปิดใช้งาน' %>">
+                                                            <i class="fas <%= dept.dept_status === 1 ? 'fa-check-circle text-success' : 'fa-times-circle text-danger' %>"></i>
+                                                            <%= dept.dept_status === 1 ? 'เปิดใช้งาน' : 'ปิดใช้งาน' %>
                                                         </button>
                                                     </td>
                                                 </tr>
-                                            <% }); %>
+                                                <% }); %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -122,25 +133,25 @@
         crossorigin="anonymous"></script>
     <script src="js/manage_dept.js"></script>
 
-<div class="modal fade" id="editDeptModal" tabindex="-1" aria-labelledby="editDeptModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <form id="editDeptForm">
-                    <input type="hidden" id="editDeptId">
-                    <div class="mb-3">
-                        <label for="editDeptName" class="form-label">ชื่อแผนก</label>
-                        <input type="text" class="form-control" id="editDeptName" required>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">ยกเลิก</button>
-                        <button type="button" class="btn btn-primary" id="saveDeptChanges">บันทึก</button>
-                    </div>
-                </form>
+    <div class="modal fade" id="editDeptModal" tabindex="-1" aria-labelledby="editDeptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form id="editDeptForm">
+                        <input type="hidden" id="editDeptId">
+                        <div class="mb-3">
+                            <label for="editDeptName" class="form-label">ชื่อแผนก</label>
+                            <input type="text" class="form-control" id="editDeptName" required>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">ยกเลิก</button>
+                            <button type="button" class="btn btn-primary" id="saveDeptChanges">บันทึก</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 </body>
 

@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Existing code...
-
-    // Edit department
     const editButtons = document.querySelectorAll('.edit-dept');
     const editModal = new bootstrap.Modal(document.getElementById('editDeptModal'));
     const editForm = document.getElementById('editDeptForm');
@@ -81,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(() => {
-                    location.reload(); // รีโหลดหน้าเพื่อแสดงข้อมูลที่อัปเดต
+                    location.reload();
                 });
             } else {
                 Swal.fire({
@@ -101,4 +98,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // เพิ่มโค้ดใหม่สำหรับการเปลี่ยนสถานะแผนก
+    const changeDeptStatusButtons = document.querySelectorAll('.change-dept-status');
+    
+    changeDeptStatusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const deptId = this.getAttribute('data-id');
+            const deptName = this.getAttribute('data-name');
+            const currentStatus = parseInt(this.getAttribute('data-status'));
+            const newStatus = currentStatus === 1 ? 0 : 1;
+            const actionText = currentStatus === 1 ? 'ยกเลิกการใช้งาน' : 'เปิดใช้งาน';
+
+            Swal.fire({
+                title: `คุณต้องการ${actionText}แผนก "${deptName}" ใช่หรือไม่?`,
+                text: `การดำเนินการนี้จะ${actionText}แผนกนี้`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'ใช่, ดำเนินการ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/manage_dept/change-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ deptId, newStatus }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'สำเร็จ!',
+                                `${actionText}แผนกเรียบร้อยแล้ว`,
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'เกิดข้อผิดพลาด!',
+                                'ไม่สามารถดำเนินการได้ กรุณาลองใหม่อีกครั้ง',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'เกิดข้อผิดพลาด!',
+                            'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                            'error'
+                        );
+                    });
+                }
+            });
+        });
+    });
 });
