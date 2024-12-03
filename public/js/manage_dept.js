@@ -6,6 +6,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const editDeptName = document.getElementById('editDeptName');
     const saveDeptChanges = document.getElementById('saveDeptChanges');
 
+    // เพิ่มการอ้างอิงถึงอิลิเมนต์สำหรับการค้นหา
+    const searchDept = document.getElementById('searchDept');
+    const deptTable = document.querySelector('table');
+    const deptRows = deptTable.querySelectorAll('tbody tr');
+
+    // ฟังก์ชันสำหรับกรองแผนก
+    function filterDepartments(searchTerm) {
+        searchTerm = searchTerm.toLowerCase();
+        deptRows.forEach(row => {
+            const deptName = row.querySelector('td:first-child').textContent.toLowerCase();
+            if (deptName.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Event listener สำหรับปุ่มค้นหา
+    searchDept.addEventListener('input', function() {
+        filterDepartments(this.value);
+    });
+
+    // Event listener สำหรับช่องค้นหาเมื่อกด Enter
+    searchDept.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            filterDepartments(this.value);
+        }
+    });
+
+    // Real-time search (uncomment ถ้าต้องการใช้งาน)
+    // searchDept.addEventListener('input', function() {
+    //     filterDepartments(this.value);
+    // });
+
     editButtons.forEach(button => {
         button.addEventListener('click', function() {
             const deptId = this.getAttribute('data-id');

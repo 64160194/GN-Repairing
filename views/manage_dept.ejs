@@ -66,23 +66,34 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">จัดการแผนก</h1>
+                    <h1 class="mt-4">Manage Department</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Manage Department</li>
+                        <li class="breadcrumb-item active">จัดการแผนก</li>
                     </ol>
 
-                    <div class="mb-4 text-end">
-                        <button id="addDeptBtn" class="btn btn-success">
-                            <i class="fas fa-plus-circle"></i> เพิ่มแผนกใหม่
-                        </button>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" id="searchDept" class="form-control" placeholder="Search...">
+                                <button class="btn btn-outline-secondary" type="button" id="searchDeptBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button id="addDeptBtn" class="btn btn-success">
+                                <i class="fas fa-plus-circle"></i> เพิ่มแผนกใหม่
+                            </button>
+                        </div>
                     </div>
+                    
 
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="card mb-4">
                                 <div class="card-header">
-                                    <i class="fas fas fa-wrench me-1"></i>
-                                    แผนก
+                                    <i class="fas fa-list me-1"></i>
+                                    Department List
                                 </div>
 
                                 <div class="card-body">
