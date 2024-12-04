@@ -17,8 +17,12 @@ const manageDeptController = {
 
     addDepartment: async (req, res) => {
         try {
-            const { name } = req.body;
-            const result = await manageDeptModel.addDepartment(name);
+            const { dept_name } = req.body;
+            console.log('Received dept_name:', dept_name);
+            if (!dept_name || dept_name.trim() === '') {
+                return res.status(400).json({ success: false, message: 'ชื่อแผนกไม่สามารถเว้นว่างได้' });
+            }
+            const result = await manageDeptModel.addDepartment(dept_name);
             res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: result.insertId });
         } catch (error) {
             console.error('Error adding department:', error);
@@ -59,9 +63,12 @@ const manageDeptController = {
     updateDepartment: async (req, res) => {
         try {
             const { deptId, deptName } = req.body;
+            if (!deptName || deptName.trim() === '') {
+                return res.status(400).json({ success: false, message: 'ชื่อแผนกไม่สามารถเว้นว่างได้' });
+            }
             const result = await manageDeptModel.updateDepartment(deptId, deptName);
             if (result) {
-                res.json({ success: true, message: 'Department updated successfully' });
+                res.json({ success: true, message: 'แผนกถูกอัปเดตเรียบร้อยแล้ว' });
             } else {
                 res.json({ success: false, message: 'ไม่สามารถอัปเดตแผนกได้' });
             }

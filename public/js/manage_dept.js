@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const editDeptId = document.getElementById('editDeptId');
     const editDeptName = document.getElementById('editDeptName');
     const saveDeptChanges = document.getElementById('saveDeptChanges');
+    const addDeptBtn = document.getElementById('addDeptBtn');
+    const addDeptModal = new bootstrap.Modal(document.getElementById('addDeptModal'));
 
     // เพิ่มการอ้างอิงถึงอิลิเมนต์สำหรับการค้นหา
     const searchDept = document.getElementById('searchDept');
@@ -29,17 +31,18 @@ document.addEventListener('DOMContentLoaded', function() {
         filterDepartments(this.value);
     });
 
-    // Event listener สำหรับช่องค้นหาเมื่อกด Enter
     searchDept.addEventListener('keyup', function(e) {
         if (e.key === 'Enter') {
             filterDepartments(this.value);
         }
     });
 
-    // Real-time search (uncomment ถ้าต้องการใช้งาน)
-    // searchDept.addEventListener('input', function() {
-    //     filterDepartments(this.value);
-    // });
+    // Event listener สำหรับปุ่ม "เพิ่มแผนกใหม่"
+    if (addDeptBtn) {
+        addDeptBtn.addEventListener('click', function() {
+            addDeptModal.show();
+        });
+    }
 
     editButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -151,13 +154,13 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('addDeptForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const newDeptName = document.getElementById('newDeptName').value;
-
+    
         fetch('/manage_dept/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ deptName: newDeptName }),
+            body: JSON.stringify({ dept_name: newDeptName }),
         })
         .then(response => response.json())
         .then(data => {
@@ -165,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
                     title: 'เพิ่มแผนกสำเร็จ',
-                    text: 'แผนกใหม่ถูกเพิ่มเรียบร้อยแล้ว',
+                    text: data.message,
                 }).then(() => {
                     location.reload();
                 });
@@ -173,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
-                    text: data.message || 'ไม่สามารถเพิ่มแผนกได้',
+                    text: data.message,
                 });
             }
         })
@@ -182,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
             Swal.fire({
                 icon: 'error',
                 title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
             });
         });
     });
