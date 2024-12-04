@@ -1,7 +1,7 @@
-const addRequestModel = require('../models/addRequestModel');
+const sharp = require('sharp');
 const multer = require('multer');
 const { memoryStorage } = require('multer');
-const sharp = require('sharp');
+const addRequestModel = require('../models/addRequestModel');
 
 // Use memory storage for multer
 const upload = multer({ storage: memoryStorage() });
@@ -26,7 +26,6 @@ const addRequestController = {
     async (req, res) => {
       console.log('processAddRequest function called');
       try {
-
         const requestData = {
           u_id: req.session.userId,
           repair_item: req.body.repairList,
@@ -34,36 +33,36 @@ const addRequestController = {
           location_n: req.body.location,
           repair_type: req.body.repairType,
           other_type: req.body.repairType === 'other' ? req.body.otherRepairTypeText : null,
-          r_pic1: req.files['image1'] ? req.files['image1'][0].buffer : null,
-          r_pic2: req.files['image2'] ? req.files['image2'][0].buffer : null,
-          r_pic3: req.files['image3'] ? req.files['image3'][0].buffer : null,
+          r_pic1: null,
+          r_pic2: null,
+          r_pic3: null,
           date_time: new Date()
         };
+
         const processImage = async (image) => {
           if (image) {
-            const {buffer, mimetype} = image[0];
-              try {
-  
-                const resizedBuffer = await sharp(buffer)
+            const { buffer, mimetype } = image[0];
+            try {
+              const resizedBuffer = await sharp(buffer)
                 .resize(900, null, { 
                   fit: 'inside',
                   withoutEnlargement: true
                 })
-                .jpeg({ quality: 80 }) // แปลงเป็น JPEG คุณภาพ 80 (ปรับค่าได้ตามต้องการ)
+                .jpeg({ quality: 80 })
                 .toBuffer();
-                  return resizedBuffer;
-              } catch (error) {
-                console.log('เกิดข้อผิดพลาดขณะบีบอัดรูปภาพ', error)
-                return null
-              }
+              return resizedBuffer;
+            } catch (error) {
+              console.log('เกิดข้อผิดพลาดขณะบีบอัดรูปภาพ', error);
+              return null;
             }
-             return null;
-         };
-  
-          requestData.r_pic1 = await processImage(req.files['image1']);
-          requestData.r_pic2 = await processImage(req.files['image2']);
-          requestData.r_pic3 = await processImage(req.files['image3']);
-  
+          }
+          return null;
+        };
+
+        requestData.r_pic1 = await processImage(req.files['image1']);
+        requestData.r_pic2 = await processImage(req.files['image2']);
+        requestData.r_pic3 = await processImage(req.files['image3']);
+
         const newRequestId = await addRequestModel.addRequest(requestData);
 
         req.session.flash = { success: 'ได้ทำการบันทึกคำร้องขอแจ้งซ่อมของคุณแล้ว !' };
