@@ -16,18 +16,18 @@ const manageDeptController = {
     },
 
     addDepartment: async (req, res) => {
-        try {
-            const { dept_name } = req.body;
-            console.log('Received dept_name:', dept_name);
-            if (!dept_name || dept_name.trim() === '') {
-                return res.status(400).json({ success: false, message: 'ชื่อแผนกไม่สามารถเว้นว่างได้' });
-            }
-            const result = await manageDeptModel.addDepartment(dept_name);
-            res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: result.insertId });
-        } catch (error) {
-            console.error('Error adding department:', error);
-            res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเพิ่มแผนก' });
+      try {
+        const { dept_name } = req.body;
+        const newId = await manageDeptModel.addDepartment(dept_name);
+        res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: newId });
+      } catch (error) {
+        console.error('เกิดข้อผิดพลาดในการเพิ่มแผนก:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+          res.status(400).json({ success: false, message: 'มีแผนกที่ใช้ชื่อนี้อยู่แล้ว' });
+        } else {
+          res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขณะเพิ่มแผนก' });
         }
+      }
     },
 
     deleteDepartment: async (req, res) => {

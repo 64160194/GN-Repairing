@@ -14,17 +14,28 @@ const manageDeptModel = {
         });
     },
 
-    addDepartment: (name) => {
-        return new Promise((resolve, reject) => {
-            const query = 'INSERT INTO tbl_dept (dept_name, dept_status) VALUES (?, 1)';
-            db.query(query, [name], (error, results) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results);
-                }
-            });
+    addDepartment: (dept_name) => {
+      return new Promise((resolve, reject) => {
+        // ขั้นตอนที่ 1: หา ID สูงสุดที่มีอยู่
+        db.query('SELECT MAX(dept_id) as maxId FROM tbl_dept', (error, results) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+          
+          const newId = (results[0].maxId || 0) + 1;
+          
+          // ขั้นตอนที่ 2: เพิ่มแผนกใหม่ด้วย ID ที่คำนวณได้
+          const query = 'INSERT INTO tbl_dept (dept_id, dept_name, dept_status) VALUES (?, ?, 1)';
+          db.query(query, [newId, dept_name], (error, results) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(newId);
+            }
+          });
         });
+      });
     },
 
     deleteDepartment: (id) => {
