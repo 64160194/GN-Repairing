@@ -17,12 +17,33 @@ const memberAdminController = {
 
   addMember: async (req, res) => {
     try {
-      const { username, password, firstName, lastName, deptId, roleId } = req.body;
-      await MemberAdminModel.addMember(username, password, firstName, lastName, deptId, roleId);
-      res.redirect('/member_admin');
+      const { u_name, u_pass, u_mail, f_name, l_name, dept_id, role_id } = req.body;
+      
+      // Basic validation
+      if (!u_name || !u_pass || !u_mail || !f_name || !l_name || !dept_id || !role_id) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+      }
+  
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(u_mail)) {
+        return res.status(400).json({ success: false, message: 'Invalid email format' });
+      }
+  
+      const result = await MemberAdminModel.addMember({
+        u_name,
+        u_pass,
+        u_mail,
+        f_name,
+        l_name,
+        dept_id,
+        role_id
+      });
+  
+      res.json({ success: true, message: 'Member added successfully', id: result.insertId });
     } catch (error) {
-      console.error('Error in addMember:', error);
-      res.status(500).render('error', { message: 'An error occurred while adding a new member.' });
+      console.error('Error adding member:', error);
+      res.status(500).json({ success: false, message: 'An error occurred while adding the member' });
     }
   },
 

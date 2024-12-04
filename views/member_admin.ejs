@@ -69,6 +69,13 @@
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">พนักงานทั้งหมด</li>
                     </ol>
+
+                    <div class="mb-4 text-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                            <i class="fas fa-user-plus"></i> Add Member
+                        </button>
+                    </div>
+
                     <div class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -141,101 +148,101 @@
                             </tbody>
                         </table>
                     </div>
-
-
-                    <!-- Modal สำหรับเพิ่มสมาชิกใหม่ -->
-                    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addMemberModalLabel">เพิ่มสมาชิกใหม่</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="addMemberForm" action="/member_admin/add" method="POST">
-                                        <div class="mb-3">
-                                            <label for="username" class="form-label">ชื่อผู้ใช้</label>
-                                            <input type="text" class="form-control" id="username" name="username"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">รหัสผ่าน</label>
-                                            <input type="password" class="form-control" id="password" name="password"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="firstName" class="form-label">ชื่อ</label>
-                                            <input type="text" class="form-control" id="firstName" name="firstName"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="lastName" class="form-label">นามสกุล</label>
-                                            <input type="text" class="form-control" id="lastName" name="lastName"
-                                                required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="deptId" class="form-label">แผนก</label>
-                                            <select class="form-select" id="deptId" name="deptId" required>
-                                                <% departments.forEach(function(dept) { %>
-                                                    <option value="<%= dept.dept_id %>">
-                                                        <%= dept.dept_name %>
-                                                    </option>
-                                                    <% }); %>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="roleId" class="form-label">บทบาท</label>
-                                            <select class="form-select" id="roleId" name="roleId" required>
-                                                <!-- เพิ่มตัวเลือกบทบาทตามที่มีในระบบ -->
-                                                <option value="1">ผู้ดูแลระบบ</option>
-                                                <option value="2">ผู้ใช้งานทั่วไป</option>
-                                                <option value="3">ช่างซ่อม</option>
-                                                <option value="4">ผู้จัดการ</option>
-                                            </select>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">บันทึก</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+            </main>
         </div>
-        </main>
     </div>
+
+    <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMemberModalLabel">Add New Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMemberForm" action="/member_admin/add" method="POST">
+                        <div class="mb-3">
+                            <label for="u_name" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="u_name" name="u_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="u_pass" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="u_pass" name="u_pass" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="u_mail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="u_mail" name="u_mail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="f_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="f_name" name="f_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="l_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="l_name" name="l_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dept_id" class="form-label">Department</label>
+                            <select class="form-select" id="dept_id" name="dept_id" required>
+                                <option value="">Select Department</option>
+                                <% if (departments && departments.length > 0) { %>
+                                    <% departments.forEach(function(dept) { %>
+                                        <option value="<%= dept.dept_id %>"><%= dept.dept_name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role_id" class="form-label">Role</label>
+                            <select class="form-select" id="role_id" name="role_id" required>
+                                <option value="">Select Role</option>
+                                <% if (roles && roles.length > 0) { %>
+                                    <% roles.forEach(function(role) { %>
+                                        <option value="<%= role.role_id %>"><%= role.role_name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" form="addMemberForm" class="btn btn-primary">Add Member</button>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const table = document.getElementById('memberTable');
-            const departmentFilter = document.getElementById('departmentFilter');
-            const roleFilter = document.getElementById('roleFilter');
-
-            function filterTable() {
-                const departmentValue = departmentFilter.value;
-                const roleValue = roleFilter.value;
-
-                for (let i = 1; i < table.rows.length; i++) {
-                    const row = table.rows[i];
-                    const departmentCell = row.cells[3];
-                    const roleCell = row.cells[4];
-
-                    const departmentMatch = !departmentValue || departmentCell.textContent.trim() === departmentFilter.options[departmentFilter.selectedIndex].text;
-                    const roleMatch = !roleValue || roleCell.textContent.trim() === roleFilter.options[roleFilter.selectedIndex].text;
-
-                    row.style.display = (departmentMatch && roleMatch) ? '' : 'none';
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#addMemberForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serialize();
+        $.ajax({
+            url: '/member_admin/add',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if(response.success) {
+                    alert('Member added successfully');
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.message);
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                alert('An error occurred while adding the member');
             }
-
-            departmentFilter.addEventListener('change', filterTable);
-            roleFilter.addEventListener('change', filterTable);
         });
-    </script>
+    });
+});
+</script>
 
 </body>
 

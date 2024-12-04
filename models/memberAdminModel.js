@@ -18,18 +18,50 @@ const MemberAdminModel = {
       });
     });
   },
-
-  addMember: (username, password, firstName, lastName, roleId) => {
+  
+  getLastUserId: () => {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO tbl_users (u_name, u_pass, f_name, l_name, role_id) VALUES (?, ?, ?, ?, ?)';
-      db.query(query, [username, password, firstName, lastName, roleId], (error, results) => {
+      const query = 'SELECT MAX(u_id) as lastId FROM tbl_users';
+      db.query(query, (error, results) => {
         if (error) {
-          reject(error);
-        } else {
-          resolve(results);
+          return reject(error);
         }
+        resolve(results[0].lastId || 0);
       });
     });
+  },
+
+  addMember: async (memberData) => {
+    try {
+      const lastId = await MemberAdminModel.getLastUserId();
+      const newId = lastId + 1;
+
+      return new Promise((resolve, reject) => {
+        const query = `
+          INSERT INTO tbl_users (u_id, u_name, u_pass, u_mail, f_name, l_name, dept_id, role_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const values = [
+          newId,
+          memberData.u_name,
+          memberData.u_pass,
+          memberData.u_mail,
+          memberData.f_name,
+          memberData.l_name,
+          memberData.dept_id,
+          memberData.role_id
+        ];
+
+        db.query(query, values, (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve({ ...results, insertId: newId });
+        });
+      });
+    } catch (error) {
+      throw error;
+    }
   },
 
   updateMember: (id, username, firstName, lastName, roleId) => {
