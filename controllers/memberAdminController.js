@@ -1,10 +1,14 @@
 const MemberAdminModel = require('../models/memberAdminModel');
+const DeptRoleModel = require('../models/deptRoleModel');
 
 const memberAdminController = {
   showMemberAdminPage: async (req, res) => {
     try {
       const members = await MemberAdminModel.getAllMembers();
-      res.render('member_admin', { members: members });
+      const departments = await DeptRoleModel.getAllDepartments();
+      const roles = await DeptRoleModel.getAllRoles();
+      
+      res.render('member_admin', { members, departments, roles });
     } catch (error) {
       console.error('Error in showMemberAdminPage:', error);
       res.status(500).render('error', { message: 'An error occurred while loading the member admin page.' });
@@ -13,8 +17,8 @@ const memberAdminController = {
 
   addMember: async (req, res) => {
     try {
-      const { username, password, firstName, lastName, roleId } = req.body;
-      await MemberAdminModel.addMember(username, password, firstName, lastName, roleId);
+      const { username, password, firstName, lastName, deptId, roleId } = req.body;
+      await MemberAdminModel.addMember(username, password, firstName, lastName, deptId, roleId);
       res.redirect('/member_admin');
     } catch (error) {
       console.error('Error in addMember:', error);
@@ -24,8 +28,8 @@ const memberAdminController = {
 
   updateMember: async (req, res) => {
     try {
-      const { id, username, firstName, lastName, roleId } = req.body;
-      await MemberAdminModel.updateMember(id, username, firstName, lastName, roleId);
+      const { id, username, firstName, lastName, deptId, roleId } = req.body;
+      await MemberAdminModel.updateMember(id, username, firstName, lastName, deptId, roleId);
       res.redirect('/member_admin');
     } catch (error) {
       console.error('Error in updateMember:', error);

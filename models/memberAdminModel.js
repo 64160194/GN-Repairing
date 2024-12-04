@@ -3,7 +3,12 @@ const db = require('../config/database');
 const MemberAdminModel = {
   getAllMembers: () => {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM tbl_users';
+      const query = `
+        SELECT u.*, d.dept_name, r.role_name 
+        FROM tbl_users u
+        LEFT JOIN tbl_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN tbl_role r ON u.role_id = r.role_id
+      `;
       db.query(query, (error, results) => {
         if (error) {
           reject(error);
