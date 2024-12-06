@@ -21,6 +21,9 @@ const loginController = {
           case 1: // Admin
             res.redirect('/request_admin');
             break;
+          case 2: // Manager admin
+            res.redirect('/request_mgradmin');
+            break;
           case 3: // Normal user
             res.redirect('/user_home');
             break;

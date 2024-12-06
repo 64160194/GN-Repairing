@@ -20,17 +20,21 @@
         .border-danger {
             border-color: #dc3545 !important;
         }
+
         .rounded {
             border-radius: 0.25rem !important;
         }
+
         .px-2 {
             padding-left: 0.5rem !important;
             padding-right: 0.5rem !important;
         }
+
         .py-1 {
             padding-top: 0.25rem !important;
             padding-bottom: 0.25rem !important;
         }
+
         .manager-badge {
             background-color: #e50013;
             color: white;
@@ -79,49 +83,51 @@
         </div>
         <div id="layoutSidenav_content">
             <div class="container-fluid px-4">
-                <h1 class="mt-4">พนักงานทั้งหมดในแผนก</h1>
+                <h1 class="mt-4">All Members</h1>
                 <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item active">Issue List (สำหรับผู้จัดการแผนก)</li>
+                    <li class="breadcrumb-item active">พนักงานทั้งหมดในแผนก (สำหรับผู้จัดการแผนก)</li>
                 </ol>
                 <div class="row">
                     <div class="col-xl-12">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fas fa-user-tie me-1"></i>
-                                พนักงาน
-                            </div>
-
-                            <div class="card-body">
-                                <table id="memberTable" class="table table-striped">
-                                    <thead>
+                        <div class="card-body">
+                            <table id="memberTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ชื่อ</th>
+                                        <th>นามสกุล</th>
+                                        <th>อีเมล</th>
+                                        <th>แผนก</th>
+                                        <th>ตำแหน่ง</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% members.forEach(member=> { %>
                                         <tr>
-                                            <th>ชื่อ</th>
-                                            <th>นามสกุล</th>
-                                            <th>อีเมล</th>
-                                            <th>แผนก</th>
-                                            <th>ตำแหน่ง</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% members.forEach(member => { %>
-                                            <tr>
-                                                <td><%= member.f_name %></td>
-                                                <td><%= member.l_name %></td>
-                                                <td><%= member.u_mail %></td>
-                                                <td><%= member.dept_name %></td>
-                                                <td>
-                                                    <% if (member.role_id === 4 || member.role_name === 'Manager') { %>
-                                                        <span class="manager-badge"><%= member.role_name %></span>
+                                            <td>
+                                                <%= member.f_name %>
+                                            </td>
+                                            <td>
+                                                <%= member.l_name %>
+                                            </td>
+                                            <td>
+                                                <%= member.u_mail %>
+                                            </td>
+                                            <td>
+                                                <%= member.dept_name %>
+                                            </td>
+                                            <td>
+                                                <% if (member.role_id===4 || member.role_name==='Manager' ) { %>
+                                                    <span class="manager-badge">
+                                                        <%= member.role_name %>
+                                                    </span>
                                                     <% } else { %>
                                                         <%= member.role_name %>
-                                                    <% } %>
-                                                </td>
-                                            </tr>
+                                                            <% } %>
+                                            </td>
+                                        </tr>
                                         <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     </main>
