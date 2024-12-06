@@ -16,28 +16,52 @@ const manageDeptController = {
     },
 
     addDepartment: async (req, res) => {
-      try {
-        const { dept_name } = req.body;
-        const newId = await manageDeptModel.addDepartment(dept_name);
-        res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: newId });
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการเพิ่มแผนก:', error);
-        if (error.code === 'ER_DUP_ENTRY') {
-          res.status(400).json({ success: false, message: 'มีแผนกที่ใช้ชื่อนี้อยู่แล้ว' });
-        } else {
-          res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขณะเพิ่มแผนก' });
+        try {
+            const { dept_name } = req.body;
+            const newId = await manageDeptModel.addDepartment(dept_name);
+            res.json({ success: true, message: 'แผนกถูกเพิ่มเรียบร้อยแล้ว', id: newId });
+        } catch (error) {
+            console.error('เกิดข้อผิดพลาดในการเพิ่มแผนก:', error);
+            if (error.code === 'ER_DUP_ENTRY') {
+                res.status(400).json({ success: false, message: 'มีแผนกที่ใช้ชื่อนี้อยู่แล้ว' });
+            } else {
+                res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดขณะเพิ่มแผนก' });
+            }
         }
-      }
+    },
+
+    checkDepartmentUsers: async (req, res) => {
+        try {
+            const deptId = req.params.deptId;
+            const hasUsers = await manageDeptModel.checkDepartmentUsers(deptId);
+            res.json({ hasUsers });
+        } catch (error) {
+            console.error('Error checking department users:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
     },
 
     deleteDepartment: async (req, res) => {
         try {
             const { deptId } = req.body;
+    
+            // ตรวจสอบว่ามีผู้ใช้งานในแผนกหรือไม่
+            const hasUsers = await manageDeptModel.checkDepartmentUsers(deptId);
+    
+            if (hasUsers) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ไม่สามารถลบแผนกได้เนื่องจากมีผู้ใช้งานอยู่ในแผนกนี้'
+                });
+            }
+    
+            // ถ้าไม่มีผู้ใช้งาน ดำเนินการลบแผนก
             const result = await manageDeptModel.deleteDepartment(deptId);
+    
             if (result && result.affectedRows > 0) {
                 res.json({ success: true, message: 'แผนกถูกลบเรียบร้อยแล้ว' });
             } else {
-                res.status(400).json({ success: false, message: 'ไม่สามารถลบแผนกได้' });
+                res.status(400).json({ success: false, message: 'ไม่สามารถลบแผนกได้ อาจเกิดจากแผนกไม่มีอยู่หรือมีข้อผิดพลาดอื่น' });
             }
         } catch (error) {
             console.error('Error deleting department:', error);
