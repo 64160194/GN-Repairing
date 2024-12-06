@@ -7,7 +7,7 @@ const memberAdminController = {
       const members = await MemberAdminModel.getAllMembers();
       const departments = await DeptRoleModel.getAllDepartments();
       const roles = await DeptRoleModel.getAllRoles();
-      
+
       res.render('member_admin', { members, departments, roles });
     } catch (error) {
       console.error('Error in showMemberAdminPage:', error);
@@ -18,18 +18,24 @@ const memberAdminController = {
   addMember: async (req, res) => {
     try {
       const { u_name, u_pass, u_mail, f_name, l_name, dept_id, role_id } = req.body;
-      
+
       // Basic validation
       if (!u_name || !u_pass || !u_mail || !f_name || !l_name || !dept_id || !role_id) {
-        return res.status(400).json({ success: false, message: 'All fields are required' });
+        return res.json({
+          success: false,
+          message: 'กรุณากรอกข้อมูลให้ครบทุกช่อง'
+        });
       }
-  
+
       // Email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(u_mail)) {
-        return res.status(400).json({ success: false, message: 'Invalid email format' });
+        return res.json({
+          success: false,
+          message: 'รูปแบบอีเมลไม่ถูกต้อง'
+        });
       }
-  
+
       const result = await MemberAdminModel.addMember({
         u_name,
         u_pass,
@@ -39,11 +45,14 @@ const memberAdminController = {
         dept_id,
         role_id
       });
-  
-      res.json({ success: true, message: 'Member added successfully', id: result.insertId });
+
+      res.json({
+        success: true,
+        message: 'เพิ่มสมาชิกสำเร็จ'
+      });
     } catch (error) {
       console.error('Error adding member:', error);
-      res.status(500).json({ success: false, message: 'An error occurred while adding the member' });
+      res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก' });
     }
   },
 
@@ -51,10 +60,10 @@ const memberAdminController = {
     try {
       const { id, username, firstName, lastName, deptId, roleId } = req.body;
       await MemberAdminModel.updateMember(id, username, firstName, lastName, deptId, roleId);
-      res.redirect('/member_admin');
+      res.json({ success: true, message: 'Member updated successfully' });
     } catch (error) {
       console.error('Error in updateMember:', error);
-      res.status(500).render('error', { message: 'An error occurred while updating the member.' });
+      res.status(500).json({ success: false, message: 'An error occurred while updating the member' });
     }
   },
 
@@ -62,10 +71,10 @@ const memberAdminController = {
     try {
       const { id } = req.params;
       await MemberAdminModel.deleteMember(id);
-      res.redirect('/member_admin');
+      res.json({ success: true, message: 'Member deleted successfully' });
     } catch (error) {
       console.error('Error in deleteMember:', error);
-      res.status(500).render('error', { message: 'An error occurred while deleting the member.' });
+      res.status(500).json({ success: false, message: 'An error occurred while deleting the member' });
     }
   }
 };
