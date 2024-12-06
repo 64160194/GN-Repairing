@@ -2,6 +2,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMemberForm = document.getElementById('addMemberForm');
     const addMemberModal = new bootstrap.Modal(document.getElementById('addMemberModal'));
     const submitAddMember = document.getElementById('submitAddMember');
+    const editMemberModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
+    const editMemberForm = document.getElementById('editMemberForm');
+    const editMemberId = document.getElementById('editMemberId');
+    const editDeptId = document.getElementById('editDeptId');
+    const deptFilter = document.getElementById('deptFilter');
+    const roleFilter = document.getElementById('roleFilter');
+    const memberTable = document.getElementById('memberTable');
 
     // ฟังก์ชันสำหรับจัดการการเพิ่มสมาชิก
     function handleAddMember(e) {
@@ -16,33 +23,33 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'สำเร็จ !',
-                    text: 'เพิ่มสมาชิกสำเร็จ',
-                }).then(() => {
-                    addMemberModal.hide();
-                    location.reload(); // รีโหลดหน้าเพื่อแสดงข้อมูลใหม่
-                });
-            } else {
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สำเร็จ !',
+                        text: 'เพิ่มสมาชิกสำเร็จ',
+                    }).then(() => {
+                        addMemberModal.hide();
+                        location.reload(); // รีโหลดหน้าเพื่อแสดงข้อมูลใหม่
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด !',
+                        text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก: ' + result.message,
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด !',
-                    text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก: ' + result.message,
+                    text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก',
                 });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'เกิดข้อผิดพลาด !',
-                text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก',
             });
-        });
     }
 
     // เพิ่ม Event Listener สำหรับปุ่ม Submit
@@ -53,35 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
         addMemberForm.reset();
     });
 
-    // ส่วนของการกรองข้อมูล
-    const departmentFilter = document.getElementById('departmentFilter');
-    const roleFilter = document.getElementById('roleFilter');
-    const memberTable = document.getElementById('memberTable');
-
-    function filterTable() {
-        const departmentValue = departmentFilter.value;
-        const roleValue = roleFilter.value;
-        const rows = memberTable.getElementsByTagName('tbody')[0].rows;
-
-        for (let i = 0; i < rows.length; i++) {
-            const departmentCell = rows[i].cells[3];
-            const roleCell = rows[i].cells[4];
-            const departmentMatch = !departmentValue || departmentCell.textContent.trim() === departmentValue;
-            const roleMatch = !roleValue || roleCell.textContent.trim() === roleValue;
-
-            if (departmentMatch && roleMatch) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
-        }
-    }
-
-    departmentFilter.addEventListener('change', filterTable);
-    roleFilter.addEventListener('change', filterTable);
-
     // ส่วนของการแก้ไขและลบสมาชิก
-    memberTable.addEventListener('click', function(e) {
+    memberTable.addEventListener('click', function (e) {
         if (e.target.classList.contains('edit-member')) {
             const memberId = e.target.getAttribute('data-id');
             handleEditMember(memberId);
@@ -91,16 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const editMemberModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
-    const editMemberForm = document.getElementById('editMemberForm');
-    const editMemberId = document.getElementById('editMemberId');
-    const editDeptId = document.getElementById('editDeptId');
-
     function handleEditMember(memberId) {
         const currentDept = document.querySelector(`.edit-member[data-id="${memberId}"]`).getAttribute('data-dept');
-        
+
         editMemberId.value = memberId;
-        
+
         // ตั้งค่า department ปัจจุบันใน dropdown
         Array.from(editDeptId.options).forEach(option => {
             if (option.textContent === currentDept) {
@@ -112,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // จัดการการส่งฟอร์มแก้ไข
-    document.getElementById('submitEditMember').addEventListener('click', function() {
+    document.getElementById('submitEditMember').addEventListener('click', function () {
         const formData = new FormData(editMemberForm);
         const data = Object.fromEntries(formData.entries());
 
@@ -123,33 +98,33 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'แก้ไขสำเร็จ',
-                    text: 'ข้อมูลสมาชิกถูกอัปเดตเรียบร้อยแล้ว',
-                }).then(() => {
-                    editMemberModal.hide();
-                    location.reload();
-                });
-            } else {
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'แก้ไขสำเร็จ',
+                        text: 'ข้อมูลสมาชิกถูกอัปเดตเรียบร้อยแล้ว',
+                    }).then(() => {
+                        editMemberModal.hide();
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: result.message || 'ไม่สามารถแก้ไขข้อมูลสมาชิกได้',
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'เกิดข้อผิดพลาด',
-                    text: result.message || 'ไม่สามารถแก้ไขข้อมูลสมาชิกได้',
+                    text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
                 });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
             });
-        });
     });
 
     function handleDeleteMember(memberId) {
@@ -167,33 +142,67 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetch(`/member_admin/delete/${memberId}`, {
                     method: 'GET',
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire(
-                            'ลบสำเร็จ!',
-                            'สมาชิกถูกลบออกจากระบบแล้ว',
-                            'success'
-                        ).then(() => {
-                            location.reload();
-                        });
-                    } else {
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'ลบสำเร็จ!',
+                                'สมาชิกถูกลบออกจากระบบแล้ว',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'เกิดข้อผิดพลาด!',
+                                'ไม่สามารถลบสมาชิกได้',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
                         Swal.fire(
                             'เกิดข้อผิดพลาด!',
-                            'ไม่สามารถลบสมาชิกได้',
+                            'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
                             'error'
                         );
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire(
-                        'เกิดข้อผิดพลาด!',
-                        'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
-                        'error'
-                    );
-                });
+                    });
             }
         });
     }
+
+    function filterTable() {
+        const deptId = deptFilter.value;
+        const roleId = roleFilter.value;
+
+        const rows = memberTable.querySelectorAll('tbody tr');
+
+        rows.forEach(function (row) {
+            let showRow = true;
+
+            if (deptId) {
+                const deptCell = row.querySelector('td:nth-child(3)');
+                const selectedDeptOption = deptFilter.querySelector(`option[value="${deptId}"]`);
+                if (deptCell.textContent.trim() !== selectedDeptOption.textContent) {
+                    showRow = false;
+                }
+            }
+
+            if (roleId) {
+                const roleCell = row.querySelector('td:nth-child(5)');
+                const selectedRoleOption = roleFilter.querySelector(`option[value="${roleId}"]`);
+                if (roleCell.textContent.trim() !== selectedRoleOption.textContent) {
+                    showRow = false;
+                }
+            }
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    deptFilter.addEventListener('change', filterTable);
+    roleFilter.addEventListener('change', filterTable);
+
+    filterTable();
 });

@@ -23,7 +23,7 @@ const memberAdminController = {
       if (!u_name || !u_pass || !u_mail || !f_name || !l_name || !dept_id || !role_id) {
         return res.json({
           success: false,
-          message: 'กรุณากรอกข้อมูลให้ครบทุกช่อง'
+          message: 'Please fill in all the required fields. กรุณากรอกข้อมูลให้ครบทุกช่อง'
         });
       }
 
@@ -32,7 +32,7 @@ const memberAdminController = {
       if (!emailRegex.test(u_mail)) {
         return res.json({
           success: false,
-          message: 'รูปแบบอีเมลไม่ถูกต้อง'
+          message: 'The Email format is invalid. รูปแบบอีเมลไม่ถูกต้อง'
         });
       }
 
@@ -48,11 +48,11 @@ const memberAdminController = {
 
       res.json({
         success: true,
-        message: 'เพิ่มสมาชิกสำเร็จ'
+        message: 'Member added successfully เพิ่มสมาชิกสำเร็จ'
       });
     } catch (error) {
       console.error('Error adding member:', error);
-      res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก' });
+      res.status(500).json({ success: false, message: 'An error occurred while adding the member.' });
     }
   },
 
@@ -72,13 +72,13 @@ const memberAdminController = {
       const userId = req.params.id;
       const result = await MemberAdminModel.updateMemberStatus(userId, 0);
       if (result) {
-        res.json({ success: true, message: 'สมาชิกถูกลบออกจากระบบแล้ว' });
+        res.json({ success: true, message: 'The member has been removed from the system.' });
       } else {
-        res.json({ success: false, message: 'ไม่สามารถลบสมาชิกได้' });
+        res.json({ success: false, message: 'Unable to delete the member.' });
       }
     } catch (error) {
       console.error('Error deleting member:', error);
-      res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการลบสมาชิก' });
+      res.status(500).json({ success: false, message: 'An error occurred while deleting the member.' });
     }
   }
 };
