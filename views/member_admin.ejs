@@ -112,9 +112,9 @@
                             <thead>
                                 <tr>
                                     <th>Username</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
+                                    <th>Full Name</th>
                                     <th>Dept.</th>
+                                    <th>Email</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -126,20 +126,23 @@
                                             <%= member.u_name %>
                                         </td>
                                         <td>
-                                            <%= member.f_name %>
-                                        </td>
-                                        <td>
-                                            <%= member.l_name %>
+                                            <%= member.f_name %> <%= member.l_name %>
                                         </td>
                                         <td>
                                             <%= member.dept_name %>
+                                        </td>
+                                        <td>
+                                            <%= member.u_mail %>
                                         </td>
                                         <td>
                                             <%= member.role_name %>
                                         </td>
                                         <td>
                                             <button class="btn btn-outline-primary btn-sm edit-member"
-                                                data-id="<%= member.u_id %>">
+                                                data-id="<%= member.u_id %>"
+                                                data-dept="<%= member.dept_name %>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editMemberModal">
                                                 <i class="fas fa-edit"></i>Edit
                                             </button>
                                             <button class="btn btn-outline-danger btn-sm delete-member"
@@ -218,6 +221,37 @@
         </div>
     </div>
 
+    <div class="modal fade" id="editMemberModal" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editMemberModalLabel">Edit Member Department</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMemberForm">
+                        <input type="hidden" id="editMemberId" name="id">
+                        <div class="mb-3">
+                            <label for="editDeptId" class="form-label">Department</label>
+                            <select class="form-select" id="editDeptId" name="dept_id" required>
+                                <option value="">Select Department</option>
+                                <% if (departments && departments.length > 0) { %>
+                                    <% departments.forEach(function(dept) { %>
+                                        <option value="<%= dept.dept_id %>"><%= dept.dept_name %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="submitEditMember" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -57,14 +57,14 @@ const memberAdminController = {
   },
 
   updateMember: async (req, res) => {
-    try {
-      const { id, username, firstName, lastName, deptId, roleId } = req.body;
-      await MemberAdminModel.updateMember(id, username, firstName, lastName, deptId, roleId);
-      res.json({ success: true, message: 'Member updated successfully' });
-    } catch (error) {
-      console.error('Error in updateMember:', error);
-      res.status(500).json({ success: false, message: 'An error occurred while updating the member' });
-    }
+      try {
+          const { id, dept_id } = req.body;
+          await MemberAdminModel.updateMemberDepartment(id, dept_id);
+          res.json({ success: true, message: 'Member updated successfully' });
+      } catch (error) {
+          console.error('Error in updateMember:', error);
+          res.status(500).json({ success: false, message: 'An error occurred while updating the member' });
+      }
   },
 
   deleteMember: async (req, res) => {

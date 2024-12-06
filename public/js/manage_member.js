@@ -92,4 +92,67 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Delete member with ID:', memberId);
         }
     });
+
+    const editMemberModal = new bootstrap.Modal(document.getElementById('editMemberModal'));
+    const editMemberForm = document.getElementById('editMemberForm');
+    const editMemberId = document.getElementById('editMemberId');
+    const editDeptId = document.getElementById('editDeptId');
+
+    document.querySelectorAll('.edit-member').forEach(button => {
+        button.addEventListener('click', function() {
+            const memberId = this.getAttribute('data-id');
+            const currentDept = this.getAttribute('data-dept');
+            
+            editMemberId.value = memberId;
+            
+            // ตั้งค่า department ปัจจุบันใน dropdown
+            Array.from(editDeptId.options).forEach(option => {
+                if (option.textContent === currentDept) {
+                    option.selected = true;
+                }
+            });
+        });
+    });
+
+    // จัดการการส่งฟอร์มแก้ไข
+    document.getElementById('submitEditMember').addEventListener('click', function() {
+        const formData = new FormData(editMemberForm);
+        const data = Object.fromEntries(formData.entries());
+
+        fetch('/member_admin/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'แก้ไขสำเร็จ',
+                    text: 'ข้อมูลสมาชิกถูกอัปเดตเรียบร้อยแล้ว',
+                }).then(() => {
+                    editMemberModal.hide();
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'เกิดข้อผิดพลาด',
+                    text: result.message || 'ไม่สามารถแก้ไขข้อมูลสมาชิกได้',
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+            });
+        });
+    });
+    
 });

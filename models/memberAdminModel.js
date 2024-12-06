@@ -64,17 +64,17 @@ const MemberAdminModel = {
     }
   },
 
-  updateMember: (id, username, firstName, lastName, roleId) => {
-    return new Promise((resolve, reject) => {
-      const query = 'UPDATE tbl_users SET u_name = ?, f_name = ?, l_name = ?, role_id = ? WHERE u_id = ?';
-      db.query(query, [username, firstName, lastName, roleId, id], (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
+  updateMemberDepartment: (id, deptId) => {
+      return new Promise((resolve, reject) => {
+          const query = 'UPDATE tbl_users SET dept_id = ? WHERE u_id = ?';
+          db.query(query, [deptId, id], (error, results) => {
+              if (error) {
+                  reject(error);
+              } else {
+                  resolve(results);
+              }
+          });
       });
-    });
   },
 
   deleteMember: (id) => {
