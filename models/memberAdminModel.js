@@ -8,6 +8,8 @@ const MemberAdminModel = {
         FROM tbl_users u
         LEFT JOIN tbl_dept d ON u.dept_id = d.dept_id
         LEFT JOIN tbl_role r ON u.role_id = r.role_id
+        WHERE u.u_status = 1
+        ORDER BY u.u_name ASC
       `;
       db.query(query, (error, results) => {
         if (error) {
@@ -38,8 +40,8 @@ const MemberAdminModel = {
 
       return new Promise((resolve, reject) => {
         const query = `
-          INSERT INTO tbl_users (u_id, u_name, u_pass, u_mail, f_name, l_name, dept_id, role_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO tbl_users (u_id, u_name, u_pass, u_mail, f_name, l_name, dept_id, role_id, u_status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
         `;
         const values = [
           newId,
@@ -65,21 +67,34 @@ const MemberAdminModel = {
   },
 
   updateMemberDepartment: (id, deptId) => {
-      return new Promise((resolve, reject) => {
-          const query = 'UPDATE tbl_users SET dept_id = ? WHERE u_id = ?';
-          db.query(query, [deptId, id], (error, results) => {
-              if (error) {
-                  reject(error);
-              } else {
-                  resolve(results);
-              }
-          });
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE tbl_users SET dept_id = ? WHERE u_id = ?';
+      db.query(query, [deptId, id], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results);
+        }
       });
+    });
+  },
+
+  updateMemberStatus: (userId, status) => {
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE tbl_users SET u_status = ? WHERE u_id = ?';
+      db.query(query, [status, userId], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.affectedRows > 0);
+        }
+      });
+    });
   },
 
   deleteMember: (id) => {
     return new Promise((resolve, reject) => {
-      const query = 'DELETE FROM tbl_users WHERE u_id = ?';
+      const query = 'UPDATE tbl_users SET u_status = 0 WHERE u_id = ?';
       db.query(query, [id], (error, results) => {
         if (error) {
           reject(error);

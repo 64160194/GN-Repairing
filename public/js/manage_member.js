@@ -84,12 +84,10 @@ document.addEventListener('DOMContentLoaded', function () {
     memberTable.addEventListener('click', function(e) {
         if (e.target.classList.contains('edit-member')) {
             const memberId = e.target.getAttribute('data-id');
-            // เพิ่มโค้ดสำหรับการแก้ไขสมาชิกที่นี่
-            console.log('Edit member with ID:', memberId);
+            handleEditMember(memberId);
         } else if (e.target.classList.contains('delete-member')) {
             const memberId = e.target.getAttribute('data-id');
-            // เพิ่มโค้ดสำหรับการลบสมาชิกที่นี่
-            console.log('Delete member with ID:', memberId);
+            handleDeleteMember(memberId);
         }
     });
 
@@ -98,21 +96,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const editMemberId = document.getElementById('editMemberId');
     const editDeptId = document.getElementById('editDeptId');
 
-    document.querySelectorAll('.edit-member').forEach(button => {
-        button.addEventListener('click', function() {
-            const memberId = this.getAttribute('data-id');
-            const currentDept = this.getAttribute('data-dept');
-            
-            editMemberId.value = memberId;
-            
-            // ตั้งค่า department ปัจจุบันใน dropdown
-            Array.from(editDeptId.options).forEach(option => {
-                if (option.textContent === currentDept) {
-                    option.selected = true;
-                }
-            });
+    function handleEditMember(memberId) {
+        const currentDept = document.querySelector(`.edit-member[data-id="${memberId}"]`).getAttribute('data-dept');
+        
+        editMemberId.value = memberId;
+        
+        // ตั้งค่า department ปัจจุบันใน dropdown
+        Array.from(editDeptId.options).forEach(option => {
+            if (option.textContent === currentDept) {
+                option.selected = true;
+            }
         });
-    });
+
+        editMemberModal.show();
+    }
 
     // จัดการการส่งฟอร์มแก้ไข
     document.getElementById('submitEditMember').addEventListener('click', function() {
@@ -154,5 +151,49 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
-    
+
+    function handleDeleteMember(memberId) {
+        Swal.fire({
+            title: 'คุณแน่ใจหรือไม่?',
+            text: "คุณต้องการลบสมาชิกนี้ใช่หรือไม่?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'ใช่, ลบเลย!',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/member_admin/delete/${memberId}`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'ลบสำเร็จ!',
+                            'สมาชิกถูกลบออกจากระบบแล้ว',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'เกิดข้อผิดพลาด!',
+                            'ไม่สามารถลบสมาชิกได้',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'เกิดข้อผิดพลาด!',
+                        'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                        'error'
+                    );
+                });
+            }
+        });
+    }
 });

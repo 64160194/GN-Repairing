@@ -57,24 +57,28 @@ const memberAdminController = {
   },
 
   updateMember: async (req, res) => {
-      try {
-          const { id, dept_id } = req.body;
-          await MemberAdminModel.updateMemberDepartment(id, dept_id);
-          res.json({ success: true, message: 'Member updated successfully' });
-      } catch (error) {
-          console.error('Error in updateMember:', error);
-          res.status(500).json({ success: false, message: 'An error occurred while updating the member' });
-      }
+    try {
+      const { id, dept_id } = req.body;
+      await MemberAdminModel.updateMemberDepartment(id, dept_id);
+      res.json({ success: true, message: 'Member updated successfully' });
+    } catch (error) {
+      console.error('Error in updateMember:', error);
+      res.status(500).json({ success: false, message: 'An error occurred while updating the member' });
+    }
   },
 
   deleteMember: async (req, res) => {
     try {
-      const { id } = req.params;
-      await MemberAdminModel.deleteMember(id);
-      res.json({ success: true, message: 'Member deleted successfully' });
+      const userId = req.params.id;
+      const result = await MemberAdminModel.updateMemberStatus(userId, 0);
+      if (result) {
+        res.json({ success: true, message: 'สมาชิกถูกลบออกจากระบบแล้ว' });
+      } else {
+        res.json({ success: false, message: 'ไม่สามารถลบสมาชิกได้' });
+      }
     } catch (error) {
-      console.error('Error in deleteMember:', error);
-      res.status(500).json({ success: false, message: 'An error occurred while deleting the member' });
+      console.error('Error deleting member:', error);
+      res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการลบสมาชิก' });
     }
   }
 };
