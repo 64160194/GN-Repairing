@@ -1,16 +1,14 @@
 const db = require('../config/database');
 
-const ReportIssueModel = {
-  getReports: () => {
+const reportIssueModel = {
+  getRepairTypeCounts: () => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.*, u.u_name, u.f_name, u.l_name, d.dept_name
-        FROM tbl_requests r
-        JOIN tbl_users u ON r.u_id = u.u_id
-        JOIN tbl_dept d ON u.dept_id = d.dept_id
-        ORDER BY r.date_time DESC
+        SELECT repair_type, COUNT(*) as count
+        FROM tbl_requests
+        GROUP BY repair_type
       `;
-      
+
       db.query(query, (error, results) => {
         if (error) {
           return reject(error);
@@ -20,18 +18,70 @@ const ReportIssueModel = {
     });
   },
 
-  generateReport: (startDate, endDate) => {
+  getReports: () => {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT r.*, u.u_name, u.f_name, u.l_name, d.dept_name
         FROM tbl_requests r
         JOIN tbl_users u ON r.u_id = u.u_id
         JOIN tbl_dept d ON u.dept_id = d.dept_id
-        WHERE r.date_time BETWEEN ? AND ?
         ORDER BY r.date_time DESC
       `;
-      
+
+      db.query(query, (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
+  },
+
+  getReportsByDateRange: (startDate, endDate) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT *
+        FROM tbl_requests
+        WHERE date_time BETWEEN ? AND ?
+        ORDER BY date_time DESC
+      `;
+
       db.query(query, [startDate, endDate], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
+  },
+
+  getReportsByDepartment: () => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT d.dept_name, COUNT(*) as count
+        FROM tbl_requests r
+        JOIN tbl_users u ON r.u_id = u.u_id
+        JOIN tbl_dept d ON u.dept_id = d.dept_id
+        GROUP BY d.dept_id, d.dept_name
+      `;
+
+      db.query(query, (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
+  },
+
+  getRepairTypesCount: () => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT repair_type, COUNT(*) as count
+        FROM tbl_requests
+        GROUP BY repair_type
+      `;
+      db.query(query, (error, results) => {
         if (error) {
           return reject(error);
         }
@@ -41,4 +91,4 @@ const ReportIssueModel = {
   }
 };
 
-module.exports = ReportIssueModel;
+module.exports = reportIssueModel;

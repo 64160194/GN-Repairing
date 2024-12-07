@@ -6,8 +6,6 @@ const roleMiddleware = require('../middlewares/roleMiddleware');
 
 // แสดงหน้ารายงาน
 router.get('/', authMiddleware, roleMiddleware([1, 2]), reportIssueController.showReportIssuePage);
-
-// สร้างรายงาน
-router.post('/generate', authMiddleware, roleMiddleware([1, 2]), reportIssueController.generateReport);
+router.get('/api/repair-types', authMiddleware, roleMiddleware([1, 2]), reportIssueController.getRepairTypeCounts);
 
 module.exports = router;

@@ -5,7 +5,6 @@ const app = express();
 
 const port = 3000;
 
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -55,6 +54,9 @@ app.use('/manage_dept', manageDeptRoutes);
 
 const requestMgrAdminRoutes = require('./routes/requestMgrAdminRoutes');
 app.use('/request_mgradmin', requestMgrAdminRoutes);
+
+const reportIssueController = require('./controllers/reportIssueController');
+app.get('/api/repair-types', reportIssueController.getRepairTypesData);
 
 const reportIssueRoutes = require('./routes/reportIssueRoutes');
 app.use('/report_issue', reportIssueRoutes);
