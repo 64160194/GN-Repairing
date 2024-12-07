@@ -70,6 +70,27 @@
                     <li class="breadcrumb-item active">รายงานการแจ้งซ่อม (สำหรับ Admin)</li>
                 </ol>
 
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="reportType">ประเภทรายงาน:</label>
+                            <select id="reportType" class="form-control">
+                                <option value="month">เดือน</option>
+                                <option value="year">ปี</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="datePicker">เลือกช่วงเวลา:</label>
+                            <input type="month" id="monthPicker" class="form-control">
+                            <select id="yearPicker" class="form-control" style="display: none;">
+                                <!-- ตัวเลือกปีจะถูกเพิ่มด้วย JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card mb-4">

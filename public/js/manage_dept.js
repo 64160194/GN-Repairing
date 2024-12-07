@@ -70,16 +70,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'แก้ไขสำเร็จ',
-                    text: 'ชื่อแผนกถูกแก้ไขเรียบร้อยแล้ว',
+                    title: 'Edit successful.',
+                    text: 'The Department name has been successfully updated.',
                 }).then(() => {
                     location.reload();
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: data.message || 'ไม่สามารถแก้ไขชื่อแผนกได้',
+                    title: 'An error occurred.',
+                    text: data.message || 'Unable to update the department name',
                 });
             }
         })
@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'เกิดข้อผิดพลาด',
-                text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                title: 'An error occurred.',
+                text: 'An error occurred while connecting to the server.',
             });
         });
 
@@ -101,14 +101,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const deptName = this.getAttribute('data-name');
             
             Swal.fire({
-                title: 'คุณแน่ใจหรือไม่?',
-                text: `คุณต้องการลบแผนก "${deptName}" ใช่หรือไม่?`,
+                title: 'Are you sure?',
+                text: `Do you want to delete the department "${deptName}" ?`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'ใช่, ลบเลย!',
-                cancelButtonText: 'ยกเลิก'
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch('/manage_dept/delete', {
@@ -129,21 +129,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(data => {
                         if (data.success) {
                             Swal.fire(
-                                'ลบแล้ว!',
-                                'แผนกถูกลบเรียบร้อยแล้ว',
+                                'Deleted!',
+                                'The Department has been deleted successfully.',
                                 'success'
                             ).then(() => {
                                 location.reload();
                             });
                         } else {
-                            throw new Error(data.message || 'ไม่สามารถลบแผนกได้');
+                            throw new Error(data.message || 'Unable to delete the department.');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         Swal.fire(
-                            'เกิดข้อผิดพลาด!',
-                            error.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                            'An error occurred!',
+                            error.message || 'An error occurred while connecting to the server.',
                             'error'
                         );
                     });
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'เพิ่มแผนกสำเร็จ',
+                    title: 'Department added successfully.',
                     text: data.message,
                 }).then(() => {
                     location.reload();
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
+                    title: 'An error occurred.',
                     text: data.message,
                 });
             }
@@ -186,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
-                title: 'เกิดข้อผิดพลาด',
-                text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                title: 'An error occurred.',
+                text: 'Unable to connect to the server.',
             });
         });
     });

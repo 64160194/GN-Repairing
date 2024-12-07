@@ -28,17 +28,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (result.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'สำเร็จ !',
-                        text: 'เพิ่มสมาชิกสำเร็จ',
+                        title: 'Success !',
+                        text: 'Member added successfully.',
                     }).then(() => {
                         addMemberModal.hide();
-                        location.reload(); // รีโหลดหน้าเพื่อแสดงข้อมูลใหม่
+                        location.reload();
                     });
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'เกิดข้อผิดพลาด !',
-                        text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก: ' + result.message,
+                        title: 'Error !',
+                        text: 'An error occurred while adding the member: ' + result.message,
                     });
                 }
             })
@@ -46,21 +46,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'เกิดข้อผิดพลาด !',
-                    text: 'เกิดข้อผิดพลาดในการเพิ่มสมาชิก',
+                    title: 'Error !',
+                    text: 'An error occurred while adding the member.',
                 });
             });
     }
 
-    // เพิ่ม Event Listener สำหรับปุ่ม Submit
     submitAddMember.addEventListener('click', handleAddMember);
 
-    // ฟังก์ชันสำหรับรีเซ็ตฟอร์มเมื่อปิด Modal
     addMemberModal._element.addEventListener('hidden.bs.modal', function () {
         addMemberForm.reset();
     });
 
-    // ส่วนของการแก้ไขและลบสมาชิก
     memberTable.addEventListener('click', function (e) {
         if (e.target.classList.contains('edit-member')) {
             const memberId = e.target.getAttribute('data-id');
@@ -76,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         editMemberId.value = memberId;
 
-        // ตั้งค่า department ปัจจุบันใน dropdown
         Array.from(editDeptId.options).forEach(option => {
             if (option.textContent === currentDept) {
                 option.selected = true;
@@ -103,8 +99,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (result.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: 'แก้ไขสำเร็จ',
-                        text: 'ข้อมูลสมาชิกถูกอัปเดตเรียบร้อยแล้ว',
+                        title: 'Edit successful',
+                        text: 'Member information has been updated successfully.',
                     }).then(() => {
                         editMemberModal.hide();
                         location.reload();
@@ -112,8 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'เกิดข้อผิดพลาด',
-                        text: result.message || 'ไม่สามารถแก้ไขข้อมูลสมาชิกได้',
+                        title: 'An error occurred.',
+                        text: result.message || 'Unable to edit member information.',
                     });
                 }
             })
@@ -121,22 +117,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'เกิดข้อผิดพลาด',
-                    text: 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                    title: 'An error occurred.',
+                    text: 'An error occurred while connecting to the server.',
                 });
             });
     });
 
     function handleDeleteMember(memberId) {
         Swal.fire({
-            title: 'คุณแน่ใจหรือไม่?',
-            text: "คุณต้องการลบสมาชิกนี้ใช่หรือไม่?",
+            title: 'Are you sure?',
+            text: "Do you want to delete this member?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'ใช่, ลบเลย!',
-            cancelButtonText: 'ยกเลิก'
+            confirmButtonText: 'Yes, delete it !',
+            cancelButtonText: 'Cancel'
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`/member_admin/delete/${memberId}`, {
@@ -146,16 +142,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         if (data.success) {
                             Swal.fire(
-                                'ลบสำเร็จ!',
-                                'สมาชิกถูกลบออกจากระบบแล้ว',
+                                'Deleted successfully!',
+                                'The member has been removed from the system.',
                                 'success'
                             ).then(() => {
                                 location.reload();
                             });
                         } else {
                             Swal.fire(
-                                'เกิดข้อผิดพลาด!',
-                                'ไม่สามารถลบสมาชิกได้',
+                                'An error occurred!',
+                                'Unable to delete the member.',
                                 'error'
                             );
                         }
@@ -163,8 +159,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     .catch(error => {
                         console.error('Error:', error);
                         Swal.fire(
-                            'เกิดข้อผิดพลาด!',
-                            'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์',
+                            'An error occurred!',
+                            'An error occurred while connecting to the server.',
                             'error'
                         );
                     });

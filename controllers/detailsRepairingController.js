@@ -17,6 +17,9 @@ const detailsRepairingController = {
         }
       });
 
+      // Log the repairDetails to check if all fields are present
+      console.log('Repair Details:', repairDetails);
+
       res.render('details_repairing', { repairDetails });
     } catch (error) {
       console.error('Error fetching repair details:', error);

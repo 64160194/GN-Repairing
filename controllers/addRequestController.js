@@ -24,7 +24,6 @@ const addRequestController = {
       { name: 'image3', maxCount: 1 }
     ]),
     async (req, res) => {
-      console.log('processAddRequest function called');
       try {
         const requestData = {
           u_id: req.session.userId,
@@ -32,12 +31,24 @@ const addRequestController = {
           sympton_def: req.body.repairSymptoms,
           location_n: req.body.location,
           repair_type: req.body.repairType,
-          other_type: req.body.repairType === 'other' ? req.body.otherRepairTypeText : null,
+          other_type: req.body.repairType === 'Other (อื่น ๆ)' ? req.body.otherRepairTypeText : null,
           r_pic1: null,
           r_pic2: null,
           r_pic3: null,
           date_time: new Date()
         };
+
+        // Validate repair_type
+        const validRepairTypes = [
+          'Facility (อาคารสถานที่)',
+          'Utility (สาธารณูปโภค)',
+          'Electrical System (ระบบไฟฟ้า)',
+          'Other (อื่น ๆ)'
+        ];
+
+        if (!validRepairTypes.includes(requestData.repair_type)) {
+          throw new Error('Invalid repair type');
+        }
 
         const processImage = async (image) => {
           if (image) {
