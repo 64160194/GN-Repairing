@@ -23,7 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchDataAndUpdateChart(month = '', year = '') {
-    fetch(`/api/repair-types?month=${month}&year=${year}`)
+    const url = `/api/repair-types?month=${month}&year=${year}`;
+    
+    fetch(url)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -40,7 +42,7 @@ function fetchDataAndUpdateChart(month = '', year = '') {
             console.log('Processed counts:', counts);
 
             createChart(repairTypes, counts);
-            createTable(repairTypes, counts);
+            createLegend(repairTypes, counts);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -50,24 +52,20 @@ function fetchDataAndUpdateChart(month = '', year = '') {
 
 function createChart(labels, data) {
     const ctx = document.getElementById('repairTypeChart').getContext('2d');
-    
-    // Clear previous chart if it exists
-    if (window.myChart instanceof Chart) {
-        window.myChart.destroy();
+    if (window.myPieChart) {
+        window.myPieChart.destroy();
     }
-
-    window.myChart = new Chart(ctx, {
-        type: 'bar',
+    window.myPieChart = new Chart(ctx, {
+        type: 'pie',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Number of Repairs',
                 data: data,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)'
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)'
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
@@ -80,27 +78,40 @@ function createChart(labels, data) {
         },
         options: {
             responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1,
-                        precision: 0
-                    }
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Distribution of Repair Types'
                 }
-            },
+            }
         }
+    });
+    console.log('Chart created');
+}
+
+function createLegend(labels, data) {
+    const legendContainer = document.getElementById('repairTypeLegend');
+    legendContainer.innerHTML = '';
+    
+    labels.forEach((label, index) => {
+        const legendItem = document.createElement('div');
+        legendItem.className = 'd-flex align-items-center mb-2';
+        
+        const colorBox = document.createElement('div');
+        colorBox.style.width = '20px';
+        colorBox.style.height = '20px';
+        colorBox.style.backgroundColor = window.myPieChart.data.datasets[0].backgroundColor[index];
+        colorBox.style.marginRight = '10px';
+        
+        const labelText = document.createElement('span');
+        labelText.textContent = `${label}: ${data[index]}`;
+        
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(labelText);
+        legendContainer.appendChild(legendItem);
     });
 }
 
-function createTable(types, counts) {
-    const tableBody = document.querySelector('#repairTypeTable tbody');
-    tableBody.innerHTML = ''; // Clear existing table rows
-    types.forEach((type, index) => {
-        const row = tableBody.insertRow();
-        const cellType = row.insertCell(0);
-        const cellCount = row.insertCell(1);
-        cellType.textContent = type;
-        cellCount.textContent = counts[index];
-    });
-}
