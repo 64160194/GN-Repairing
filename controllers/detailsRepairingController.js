@@ -10,19 +10,14 @@ const detailsRepairingController = {
         return res.status(404).send('Repair details not found');
       }
       
-      // ตรวจสอบว่ามีรูปภาพหรือไม่
       ['r_pic1', 'r_pic2', 'r_pic3'].forEach(pic => {
         if (!repairDetails[pic]) {
           repairDetails[pic] = null;
         }
       });
 
-      // Log the repairDetails to check if all fields are present
-      console.log('Repair Details:', repairDetails);
-
       res.render('details_repairing', { repairDetails });
     } catch (error) {
-      console.error('Error fetching repair details:', error);
       res.status(500).send('Internal Server Error');
     }
   }

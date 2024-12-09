@@ -40,13 +40,14 @@ const reportIssueController = {
 
   getRepairTypesData: async (req, res) => {
     try {
-      const repairTypesData = await reportIssueModel.getRepairTypesCount();
-      res.json(repairTypesData);
+        const { month, year } = req.query;
+        const data = await reportIssueModel.getRepairTypeCounts(month, year);
+        res.json(data);
     } catch (error) {
-      console.error('Error in getRepairTypesData:', error);
-      res.status(500).json({ error: 'An error occurred while fetching repair types data.' });
+        console.error('Error in getRepairTypesData:', error);
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
-  }
+}
 };
 
 module.exports = reportIssueController;

@@ -74,21 +74,34 @@ const reportIssueModel = {
     });
   },
 
-  getRepairTypesCount: () => {
+  getRepairTypeCounts: (month, year) => {
     return new Promise((resolve, reject) => {
-      const query = `
-        SELECT repair_type, COUNT(*) as count
-        FROM tbl_requests
-        GROUP BY repair_type
-      `;
-      db.query(query, (error, results) => {
-        if (error) {
-          return reject(error);
+        let query = `
+            SELECT repair_type, COUNT(*) as count
+            FROM tbl_requests
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (month) {
+            query += ` AND MONTH(date_time) = ?`;
+            params.push(month);
         }
-        resolve(results);
-      });
+        if (year) {
+            query += ` AND YEAR(date_time) = ?`;
+            params.push(year);
+        }
+
+        query += ` GROUP BY repair_type`;
+
+        db.query(query, params, (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(results);
+        });
     });
-  }
+}
 };
 
 module.exports = reportIssueModel;
