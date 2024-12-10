@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const reportIssueController = require('../controllers/reportIssueController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
+const reportIssueController = require('../controllers/reportIssueController');
 
-// แสดงหน้ารายงาน
 router.get('/', authMiddleware, roleMiddleware([1, 2]), reportIssueController.showReportIssuePage);
-router.get('/api/repair-types', authMiddleware, roleMiddleware([1, 2]), reportIssueController.getRepairTypeCounts);
+router.post('/generate', authMiddleware, roleMiddleware([1, 2]), reportIssueController.generateReport);
+router.get('/api/repair-types', authMiddleware, roleMiddleware([1, 2]), reportIssueController.getRepairTypesData);
+router.get('/api/department-requests', authMiddleware, roleMiddleware([1, 2]), reportIssueController.getDepartmentRequestsData);
 
 module.exports = router;

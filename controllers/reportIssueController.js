@@ -5,11 +5,11 @@ const reportIssueController = {
     try {
       const reports = await reportIssueModel.getReports();
       const repairTypeCounts = await reportIssueModel.getRepairTypeCounts();
-      res.render('report_issue', { 
+      res.render('report_issue', {
         title: 'Report Issue',
         reports: reports,
         repairTypeCounts: repairTypeCounts,
-        user: req.session // Assuming user data is stored in session
+        user: req.session
       });
     } catch (error) {
       console.error('Error in showReportIssuePage:', error);
@@ -40,14 +40,25 @@ const reportIssueController = {
 
   getRepairTypesData: async (req, res) => {
     try {
-        const { month, year } = req.query;
-        const data = await reportIssueModel.getRepairTypeCounts(month, year);
-        res.json(data);
+      const { month, year } = req.query;
+      const data = await reportIssueModel.getRepairTypeCounts(month, year);
+      res.json(data);
     } catch (error) {
-        console.error('Error in getRepairTypesData:', error);
-        res.status(500).json({ error: 'An error occurred while fetching data.' });
+      console.error('Error in getRepairTypesData:', error);
+      res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
-}
+  },
+
+  getDepartmentRequestsData: async (req, res) => {
+    try {
+      const { month, year } = req.query;
+      const data = await reportIssueModel.getDepartmentRequestsCounts(month, year);
+      res.json(data);
+    } catch (error) {
+      console.error('Error in getDepartmentRequestsData:', error);
+      res.status(500).json({ error: 'An error occurred while fetching department requests data.' });
+    }
+  }
 };
 
 module.exports = reportIssueController;

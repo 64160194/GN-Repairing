@@ -15,14 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('applyFilter').addEventListener('click', function() {
         const selectedMonth = document.getElementById('monthSelect').value;
         const selectedYear = document.getElementById('yearSelect').value;
-        fetchDataAndUpdateChart(selectedMonth, selectedYear);
+        fetchDataAndUpdateCharts(selectedMonth, selectedYear);
     });
 
-    // Initial data fetch
-    fetchDataAndUpdateChart();
+    fetchDataAndUpdateCharts();
 });
 
-function fetchDataAndUpdateChart(month = '', year = '') {
+function fetchDataAndUpdateCharts(month = '', year = '') {
+    fetchRepairTypesData(month, year);
+    fetchDepartmentRequestsData(month, year);
+}
+
+function fetchRepairTypesData(month = '', year = '') {
     const url = `/api/repair-types?month=${month}&year=${year}`;
     
     fetch(url)
@@ -33,24 +37,45 @@ function fetchDataAndUpdateChart(month = '', year = '') {
             return response.json();
         })
         .then(data => {
-            console.log('Data received:', data);
+            console.log('Repair Types Data received:', data);
             const repairTypes = ['Facility (อาคารสถานที่)', 'Utility (สาธารณูปโภค)', 'Electrical System (ระบบไฟฟ้า)', 'Other (อื่น ๆ)'];
             const counts = repairTypes.map(type => {
                 const item = data.find(d => d.repair_type === type);
                 return item ? item.count : 0;
             });
-            console.log('Processed counts:', counts);
+            console.log('Processed repair types counts:', counts);
 
-            createChart(repairTypes, counts);
-            createLegend(repairTypes, counts);
+            createRepairTypeChart(repairTypes, counts);
+            createRepairTypeLegend(repairTypes, counts);
         })
         .catch(error => {
             console.error('Error:', error);
-            document.getElementById('repairTypeChart').insertAdjacentHTML('afterend', `<p class="text-danger">Error loading chart: ${error.message}</p>`);
+            document.getElementById('repairTypeChart').insertAdjacentHTML('afterend', `<p class="text-danger">Error loading repair types chart: ${error.message}</p>`);
         });
 }
 
-function createChart(labels, data) {
+function fetchDepartmentRequestsData(month = '', year = '') {
+    const url = `/api/department-requests?month=${month}&year=${year}`;
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Department Requests Data received:', data);
+            createDepartmentRequestsChart(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('departmentRequestsChart').insertAdjacentHTML('afterend', `<p class="text-danger">Error loading department requests chart: ${error.message}</p>`);
+        });
+}
+
+//Pie Chart
+function createRepairTypeChart(labels, data) {
     const ctx = document.getElementById('repairTypeChart').getContext('2d');
     if (window.myPieChart) {
         window.myPieChart.destroy();
@@ -89,10 +114,10 @@ function createChart(labels, data) {
             }
         }
     });
-    console.log('Chart created');
+    console.log('Repair Type Chart created');
 }
 
-function createLegend(labels, data) {
+function createRepairTypeLegend(labels, data) {
     const legendContainer = document.getElementById('repairTypeLegend');
     legendContainer.innerHTML = '';
     
@@ -115,3 +140,52 @@ function createLegend(labels, data) {
     });
 }
 
+//Bar Chart
+function createDepartmentRequestsChart(data) {
+    const ctx = document.getElementById('departmentRequestsChart').getContext('2d');
+    if (window.myBarChart) {
+        window.myBarChart.destroy();
+    }
+    window.myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.map(item => item.dept_name),
+            datasets: [{
+                label: 'Number of Requests',
+                data: data.map(item => item.request_count),
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Requests'
+                    },
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Department'
+                    }
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Number of Requests by Department'
+                }
+            }
+        }
+    });
+    console.log('Department Requests Chart created');
+}

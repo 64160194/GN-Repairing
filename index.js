@@ -58,6 +58,10 @@ app.use('/request_mgradmin', requestMgrAdminRoutes);
 const reportIssueController = require('./controllers/reportIssueController');
 app.get('/api/repair-types', reportIssueController.getRepairTypesData);
 
+// เพิ่มบรรทัดนี้หลังจากการกำหนด route สำหรับ /api/repair-types
+app.get('/api/repair-types', reportIssueController.getRepairTypesData);
+app.get('/api/department-requests', reportIssueController.getDepartmentRequestsData);
+
 const reportIssueRoutes = require('./routes/reportIssueRoutes');
 app.use('/report_issue', reportIssueRoutes);
 

@@ -76,32 +76,64 @@ const reportIssueModel = {
 
   getRepairTypeCounts: (month, year) => {
     return new Promise((resolve, reject) => {
-        let query = `
+      let query = `
             SELECT repair_type, COUNT(*) as count
             FROM tbl_requests
             WHERE 1=1
         `;
-        const params = [];
+      const params = [];
 
-        if (month) {
-            query += ` AND MONTH(date_time) = ?`;
-            params.push(month);
+      if (month) {
+        query += ` AND MONTH(date_time) = ?`;
+        params.push(month);
+      }
+      if (year) {
+        query += ` AND YEAR(date_time) = ?`;
+        params.push(year);
+      }
+
+      query += ` GROUP BY repair_type`;
+
+      db.query(query, params, (error, results) => {
+        if (error) {
+          return reject(error);
         }
-        if (year) {
-            query += ` AND YEAR(date_time) = ?`;
-            params.push(year);
-        }
-
-        query += ` GROUP BY repair_type`;
-
-        db.query(query, params, (error, results) => {
-            if (error) {
-                return reject(error);
-            }
-            resolve(results);
-        });
+        resolve(results);
+      });
     });
-}
+  },
+
+  getDepartmentRequestsCounts: (month, year) => {
+    return new Promise((resolve, reject) => {
+      let query = `
+      SELECT d.dept_name, COUNT(*) as request_count
+      FROM tbl_requests r
+      JOIN tbl_users u ON r.u_id = u.u_id
+      JOIN tbl_dept d ON u.dept_id = d.dept_id
+      WHERE 1=1
+    `;
+      const params = [];
+
+      if (month) {
+        query += ` AND MONTH(r.date_time) = ?`;
+        params.push(month);
+      }
+      if (year) {
+        query += ` AND YEAR(r.date_time) = ?`;
+        params.push(year);
+      }
+
+      query += ` GROUP BY d.dept_id, d.dept_name`;
+
+      db.query(query, params, (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results);
+      });
+    });
+  }
+
 };
 
 module.exports = reportIssueModel;
