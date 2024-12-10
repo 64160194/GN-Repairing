@@ -63,25 +63,59 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Issue List</h1>
+                    <h1 class="mt-4">Details</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">คำร้องขอแจ้งซ่อม</li>
+                        <li class="breadcrumb-item active">สำหรับเจ้าหน้าที่ซ่อมบำรุง</li>
                     </ol>
                     <div class="row">
                         <div class="col-xl-12">
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <i class="fas fas fa-wrench me-1"></i>
-                                    Issue List
+                                    Maintenance Worker
                                 </div>
 
                                 <div class="card-body">
-                                    <div class="d-flex justify-content-end mb-3">
-                                        <a href="/maintenance_worker" class="btn btn-primary">
-                                            <i class="fas fa-tools me-2"></i>จัดการช่างซ่อมบำรุง
-                                        </a>
-                                    </div>
-                                    <!-- ส่วนอื่น ๆ ของ card-body ที่มีอยู่แล้ว (ถ้ามี) -->
+                                    <form action="/maintenance_worker/add" method="POST">
+                                        <div class="mb-3">
+                                            <label for="suervery_results" class="form-label">Survey Results <small class="text-muted">(ผลการตรวจสอบ)</small></label>
+                                            <select class="form-select" id="suervery_results" name="suervery_results" required>
+                                                <option value="">Select survey result</option>
+                                                <option value="can be fix">Can be fixed <small class="text-muted">(สามารถแก้ไขได้)</small></option>
+                                                <option value="can't fix">Can't fix <small class="text-muted">(ไม่สามารถแก้ไขได้)</small></option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_details" class="form-label">Edit Details <small class="text-muted">(รายละเอียดการแก้ไข)</small></label>
+                                            <textarea class="form-control" id="edit_details" name="edit_details" rows="3"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="finish_date" class="form-label">Completion Date <small class="text-muted">(วันที่งานเสร็จสิ้น)</small></label>
+                                            <input type="date" class="form-control" id="finish_date" name="finish_date">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="time_taken" class="form-label">Time Taken <small class="text-muted">(เวลาที่ใช้)</small></label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="text" class="form-control" id="time_taken" name="time_taken" style="width: 120%;">
+                                                <span class="ms-2">ชั่วโมง</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit_by" class="form-label">Repaired By <small class="text-muted">(แก้ไขโดย)</small></label>
+                                            <select class="form-select" id="edit_by" name="edit_by" required>
+                                                <option value="">Select Repairer</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="maker">Maker</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="budget_by" class="form-label">Budget<small class="text-muted">(งบประมาณ)</small></label>
+                                            <input type="number" class="form-control" id="budget_by" name="budget_by" step="1" min="0" placeholder="Enter amount">
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </div>
+                                    </form>
                                 </div>
 
                             </div>
