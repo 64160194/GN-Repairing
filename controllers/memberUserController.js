@@ -1,5 +1,4 @@
 const MemberUserModel = require('../models/memberUserModel');
-
 const memberUserController = {
   showMemberUserPage: async (req, res) => {
     try {

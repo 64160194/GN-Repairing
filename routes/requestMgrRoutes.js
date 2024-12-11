@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.get('/', authMiddleware, roleMiddleware(4), requestMgrController.showRequestMgr);
 router.get('/view/:id', authMiddleware, roleMiddleware(4), requestMgrController.viewRequest);
+router.post('/handle_request', authMiddleware, roleMiddleware(4), requestMgrController.handleRequest);
 
 module.exports = router;

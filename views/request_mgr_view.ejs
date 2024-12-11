@@ -51,10 +51,10 @@
         </div>
         <div id="layoutSidenav_content">
             <div class="container-fluid px-4">
-                <h1 class="mt-4">รายละเอียดคำขอซ่อม</h1>
+                <h1 class="mt-4">Details</h1>
                 <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="/request_mgr">Issue List</a></li>
-                    <li class="breadcrumb-item active">รายละเอียดคำขอซ่อม</li>
+                    <li class="breadcrumb-item active">สำหรับ Manager แผนก <%= request.dept_name %>
+                    </li>
                 </ol>
                 <div class="row">
                     <div class="col-xl-12">
@@ -65,43 +65,70 @@
                             </div>
                             <div class="card-body">
                                 <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <h5>ข้อมูลผู้แจ้งซ่อม</h5>
-                                        <p><strong>ชื่อ-นามสกุล:</strong> <%= request.f_name %> <%= request.l_name %></p>
-                                        <p><strong>แผนก:</strong> <%= request.dept_name %></p>
-                                        <p><strong>อีเมล:</strong> <%= request.u_mail %></p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h5>ข้อมูลการแจ้งซ่อม</h5>
-                                        <p><strong>วันที่แจ้งซ่อม:</strong> <%= new Date(request.date_time).toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' }) %></p>
-                                        <p><strong>สถานที่:</strong> <%= request.location_n %></p>
-                                        <p><strong>ประเภทการซ่อม:</strong> <%= request.repair_type %></p>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <strong>Name</strong> <small class="text-muted">(ชื่อ - สกุล)</small> :
+                                                <%= request.f_name %>
+                                                    <%= request.l_name %>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Department</strong> <small class="text-muted">(แผนก)</small> :
+                                                <%= request.dept_name %>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <strong>Email</strong> <small class="text-muted">(อีเมล)</small> :
+                                                <%= request.u_mail %>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-12">
                                         <h5>รายละเอียดการซ่อม</h5>
-                                        <p><strong>อุปกรณ์ที่ต้องการซ่อม:</strong> <%= request.repair_item %></p>
-                                        <p><strong>รายละเอียดเพิ่มเติม:</strong> <%= request.detail %></p>
+                                        <p><strong>List of repairs</strong> <small
+                                                class="text-muted">(รายการแจ้งซ่อม)</small> : <%= request.repair_item %>
+                                        </p>
+                                        <p><strong>Nature of the defect</strong> <small
+                                                class="text-muted">(อาการ/ลักษณะการชำรุด)</small> : <%=
+                                                request.sympton_def %>
+                                        </p>
+                                        <p><strong>Location </strong> <small class="text-muted">(สถานที่)</small> : <%=
+                                                request.location_n %>
+                                        </p>
+                                        <p><strong>Repair Type </strong> <small
+                                                class="text-muted">(ประเภทการซ่อม)</small> : <%= request.repair_type %>
+                                        </p>
+                                        <p><strong>Date </strong> <small class="text-muted">(วันที่แจ้ง)</small> : <%=
+                                                new Date(request.date_time).toLocaleString('th-TH', { dateStyle: 'long'
+                                                , timeStyle: 'short' }) %>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-12">
                                         <h5>รูปภาพประกอบ</h5>
                                         <% if (request.r_pic1) { %>
-                                            <img src="data:image/jpeg;base64,<%= request.r_pic1 %>" alt="รูปภาพที่ 1" class="img-fluid mb-2" style="max-width: 300px;">
-                                        <% } %>
-                                        <% if (request.r_pic2) { %>
-                                            <img src="data:image/jpeg;base64,<%= request.r_pic2 %>" alt="รูปภาพที่ 2" class="img-fluid mb-2" style="max-width: 300px;">
-                                        <% } %>
-                                        <% if (request.r_pic3) { %>
-                                            <img src="data:image/jpeg;base64,<%= request.r_pic3 %>" alt="รูปภาพที่ 3" class="img-fluid mb-2" style="max-width: 300px;">
-                                        <% } %>
+                                            <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic1).toString('base64') %>"
+                                                alt="รูปภาพที่ 1" class="img-fluid mb-2" style="max-width: 300px;">
+                                            <% } %>
+                                                <% if (request.r_pic2) { %>
+                                                    <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic2).toString('base64') %>"
+                                                        alt="รูปภาพที่ 2" class="img-fluid mb-2"
+                                                        style="max-width: 300px;">
+                                                    <% } %>
+                                                        <% if (request.r_pic3) { %>
+                                                            <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic3).toString('base64') %>"
+                                                                alt="รูปภาพที่ 3" class="img-fluid mb-2"
+                                                                style="max-width: 300px;">
+                                                            <% } %>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <a href="/request_mgr" class="btn btn-primary">กลับไปหน้ารายการ</a>
+                                    <div class="col-md-12 text-end">
+                                        <a href="/request_mgr" class="btn btn-secondary me-2">Cancel</a>
+                                        <button class="btn btn-success me-2" onclick="handleRequest('<%= request.req_id %>', true)">Approve</button>
+                                        <button class="btn btn-danger" onclick="handleRequest('<%= request.req_id %>', false)">Disapprove</button>
                                     </div>
                                 </div>
                             </div>
@@ -113,6 +140,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
         crossorigin="anonymous"></script>
+    <script src="/js/request_mgr_view.js"></script>
 </body>
 
 </html>
