@@ -35,16 +35,76 @@ const addRequestModel = {
     });
   },
 
+  createApproveRecord: () => {
+    return new Promise((resolve, reject) => {
+      // First, get the maximum approve_id
+      const getMaxIdQuery = 'SELECT MAX(approve_id) as maxId FROM tbl_approve';
+      db.query(getMaxIdQuery, (error, results) => {
+        if (error) {
+          console.error('Error getting max approve_id:', error);
+          return reject(error);
+        }
+  
+        const newId = (results[0].maxId || 0) + 1;
+  
+        // Now insert the new record with the new ID
+        const insertQuery = `
+          INSERT INTO tbl_approve (approve_id, app_mgr, app_hrga, app_admin) 
+          VALUES (?, NULL, NULL, NULL)
+        `;
+        db.query(insertQuery, [newId], (error, results) => {
+          if (error) {
+            console.error('Error in createApproveRecord:', error);
+            reject(error);
+          } else {
+            resolve(newId);
+          }
+        });
+      });
+    });
+  },
+
+  createWorkerRecord: () => {
+    return new Promise((resolve, reject) => {
+      // First, get the maximum worker_id
+      const getMaxIdQuery = 'SELECT MAX(worker_id) as maxId FROM tbl_worker';
+      db.query(getMaxIdQuery, (error, results) => {
+        if (error) {
+          console.error('Error getting max worker_id:', error);
+          return reject(error);
+        }
+  
+        const newId = (results[0].maxId || 0) + 1;
+  
+        // Now insert the new record with the new ID
+        const insertQuery = `
+          INSERT INTO tbl_worker 
+          (worker_id, survey_results, edit_details, date_by, finish_time, edit_by, budget_by) 
+          VALUES (?, NULL, NULL, NULL, NULL, NULL, NULL)
+        `;
+        db.query(insertQuery, [newId], (error, results) => {
+          if (error) {
+            console.error('Error in createWorkerRecord:', error);
+            reject(error);
+          } else {
+            resolve(newId);
+          }
+        });
+      });
+    });
+  },
   addRequest: async (requestData) => {
     try {
       const maxId = await addRequestModel.getMaxRequestId();
       const newId = maxId + 1;
+      const approveId = await addRequestModel.createApproveRecord();
+      const workerId = await addRequestModel.createWorkerRecord();
 
       return new Promise((resolve, reject) => {
         const query = `
           INSERT INTO tbl_requests 
-          (req_id, u_id, repair_item, sympton_def, location_n, repair_type, other_type, r_pic1, r_pic2, r_pic3, date_time)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+          (req_id, u_id, repair_item, sympton_def, location_n, repair_type, other_type, r_pic1, r_pic2, r_pic3, date_time, approve_id, worker_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
         `;
 
         const values = [
@@ -57,7 +117,9 @@ const addRequestModel = {
           requestData.other_type,
           requestData.r_pic1,
           requestData.r_pic2,
-          requestData.r_pic3
+          requestData.r_pic3,
+          approveId,
+          workerId
         ];
 
         db.query(query, values, (error, results) => {
@@ -70,7 +132,7 @@ const addRequestModel = {
         });
       });
     } catch (error) {
-      console.error('Error in getMaxRequestId:', error);
+      console.error('Error in addRequest:', error);
       throw error;
     }
   }

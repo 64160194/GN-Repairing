@@ -64,7 +64,40 @@
                             </div>
 
                             <div class="card-body">
-
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date & Time</th>
+                                            <th>User</th>
+                                            <th>Repair Item</th>
+                                            <th>Location</th>
+                                            <th>Repair Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% requests.forEach(request => { %>
+                                            <tr>
+                                                <td><%= new Date(request.date_time).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) %></td>
+                                                <td>
+                                                    <% if (request.f_name && request.l_name) { %>
+                                                        <%= request.f_name %> <%= request.l_name %>
+                                                    <% } else if (request.username) { %>
+                                                        <%= request.username %>
+                                                    <% } else { %>
+                                                        N/A
+                                                    <% } %>
+                                                </td>
+                                                <td><%= request.repair_item %></td>
+                                                <td><%= request.location_n %></td>
+                                                <td><%= request.repair_type %></td>
+                                                <td>
+                                                    <a href="/request_mgr/view/<%= request.req_id %>" class="btn btn-primary btn-sm">View</a>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
                             </div>
 
                         </div>
