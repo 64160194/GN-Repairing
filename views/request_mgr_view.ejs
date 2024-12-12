@@ -61,74 +61,164 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-info-circle me-1"></i>
-                                รายละเอียดคำขอซ่อม
+                                Details
                             </div>
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <strong>Name</strong> <small class="text-muted">(ชื่อ - สกุล)</small> :
-                                                <%= request.f_name %>
-                                                    <%= request.l_name %>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <strong>Department</strong> <small class="text-muted">(แผนก)</small> :
-                                                <%= request.dept_name %>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <strong>Email</strong> <small class="text-muted">(อีเมล)</small> :
-                                                <%= request.u_mail %>
-                                            </div>
+                                        <h5>Requester Information</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <colgroup>
+                                                    <col class="col-3">
+                                                    <col class="col-6">
+                                                </colgroup>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Name</strong>
+                                                            <br>
+                                                            <small class="text-muted">(ชื่อ - สกุล)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.f_name %>
+                                                                <%= request.l_name %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Department</strong>
+                                                            <br>
+                                                            <small class="text-muted">(แผนก)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.dept_name %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Email</strong>
+                                                            <br>
+                                                            <small class="text-muted">(อีเมล)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.u_mail %>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-12">
-                                        <h5>รายละเอียดการซ่อม</h5>
-                                        <p><strong>List of repairs</strong> <small
-                                                class="text-muted">(รายการแจ้งซ่อม)</small> : <%= request.repair_item %>
-                                        </p>
-                                        <p><strong>Nature of the defect</strong> <small
-                                                class="text-muted">(อาการ/ลักษณะการชำรุด)</small> : <%=
-                                                request.sympton_def %>
-                                        </p>
-                                        <p><strong>Location </strong> <small class="text-muted">(สถานที่)</small> : <%=
-                                                request.location_n %>
-                                        </p>
-                                        <p><strong>Repair Type </strong> <small
-                                                class="text-muted">(ประเภทการซ่อม)</small> : <%= request.repair_type %>
-                                        </p>
-                                        <p><strong>Date </strong> <small class="text-muted">(วันที่แจ้ง)</small> : <%=
-                                                new Date(request.date_time).toLocaleString('th-TH', { dateStyle: 'long'
-                                                , timeStyle: 'short' }) %>
-                                        </p>
+                                        <h5>Repair Details</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <colgroup>
+                                                    <col class="col-3">
+                                                    <col class="col-6">
+                                                </colgroup>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">List of repairs</strong>
+                                                            <br>
+                                                            <small class="text-muted">(รายการแจ้งซ่อม)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.repair_item %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Nature of the defect</strong>
+                                                            <br>
+                                                            <small class="text-muted">(อาการ/ลักษณะการชำรุด)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.sympton_def %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Location</strong>
+                                                            <br>
+                                                            <small class="text-muted">(สถานที่)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.location_n %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Repair Type</strong>
+                                                            <br>
+                                                            <small class="text-muted">(ประเภทการซ่อม)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= request.repair_type %>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <strong class="fs-6">Date/ Time</strong>
+                                                            <br>
+                                                            <small class="text-muted">(วัน/ เวลาที่แจ้ง)</small>
+                                                        </th>
+                                                        <td>
+                                                            <%= new Date(request.date_time).toLocaleString('th-TH', {
+                                                                dateStyle: 'long' , timeStyle: 'short' }) %>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-md-12">
-                                        <h5>รูปภาพประกอบ</h5>
-                                        <% if (request.r_pic1) { %>
-                                            <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic1).toString('base64') %>"
-                                                alt="รูปภาพที่ 1" class="img-fluid mb-2" style="max-width: 300px;">
+                                        <h5>Supporting Images</h5>
+                                        <div class="d-flex flex-wrap justify-content-start">
+                                            <% if (request.r_pic1) { %>
+                                                <div class="m-2">
+                                                    <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic1).toString('base64') %>"
+                                                        alt="Image 1" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
+                                                </div>
                                             <% } %>
-                                                <% if (request.r_pic2) { %>
+                                            <% if (request.r_pic2) { %>
+                                                <div class="m-2">
                                                     <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic2).toString('base64') %>"
-                                                        alt="รูปภาพที่ 2" class="img-fluid mb-2"
-                                                        style="max-width: 300px;">
-                                                    <% } %>
-                                                        <% if (request.r_pic3) { %>
-                                                            <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic3).toString('base64') %>"
-                                                                alt="รูปภาพที่ 3" class="img-fluid mb-2"
-                                                                style="max-width: 300px;">
-                                                            <% } %>
+                                                        alt="Image 2" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
+                                                </div>
+                                            <% } %>
+                                            <% if (request.r_pic3) { %>
+                                                <div class="m-2">
+                                                    <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic3).toString('base64') %>"
+                                                        alt="Image 3" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal for enlarged image -->
+                                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                <img src="" class="img-fluid" id="enlargedImage">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 text-end">
                                         <a href="/request_mgr" class="btn btn-secondary me-2">Cancel</a>
-                                        <button class="btn btn-success me-2" onclick="handleRequest('<%= request.req_id %>', true)">Approve</button>
-                                        <button class="btn btn-danger" onclick="handleRequest('<%= request.req_id %>', false)">Disapprove</button>
+                                        <button class="btn btn-success me-2"
+                                            onclick="handleRequest('<%= request.req_id %>', true)">Approve</button>
+                                        <button class="btn btn-danger"
+                                            onclick="handleRequest('<%= request.req_id %>', false)">Disapprove</button>
                                     </div>
                                 </div>
                             </div>

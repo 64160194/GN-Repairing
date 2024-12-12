@@ -56,3 +56,16 @@ function handleRequest(reqId, isApproved) {
         alert('เกิดข้อผิดพลาดในการส่งคำขอ');
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('.clickable-image');
+    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+    const enlargedImage = document.getElementById('enlargedImage');
+
+    images.forEach(img => {
+        img.addEventListener('click', function() {
+            enlargedImage.src = this.src;
+            modal.show();
+        });
+    });
+});
