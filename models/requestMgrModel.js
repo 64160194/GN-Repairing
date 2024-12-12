@@ -1,5 +1,10 @@
 const db = require('../config/database');
 
+const ApprovalStatus = {
+  APPROVE: 'approve',
+  REJECT: 'reject'
+};
+
 const requestMgrModel = {
   getRequestsByDepartment: (deptId) => {
     return new Promise((resolve, reject) => {
@@ -61,13 +66,19 @@ const requestMgrModel = {
     });
   },
 
-  updateRequestStatus: (req_id, status) => {
+  updateRequestStatus: (req_id, is_approved) => {
     return new Promise((resolve, reject) => {
       const query = `
-        UPDATE tbl_requests
-        SET status = ?
-        WHERE req_id = ?
+        UPDATE tbl_approve
+        SET app_mgr = ?
+        WHERE approve_id = (
+          SELECT approve_id
+          FROM tbl_requests
+          WHERE req_id = ?
+        )
       `;
+      
+      const status = is_approved ? ApprovalStatus.APPROVE : ApprovalStatus.REJECT;
       
       db.query(query, [status, req_id], (error, results) => {
         if (error) {
@@ -101,45 +112,18 @@ const requestMgrModel = {
     });
   },
 
-  saveApproval: (req_id, mgr_id, is_approved, role) => {
-    return new Promise((resolve, reject) => {
-      let approveField;
-      switch (role) {
-        case 'mgr':
-          approveField = 'app_mgr';
-          break;
-        case 'hrga':
-          approveField = 'app_hrga';
-          break;
-        case 'admin':
-          approveField = 'app_admin';
-          break;
-        default:
-          return reject(new Error('Invalid role'));
-      }
-  
-      const query = `
-        INSERT INTO tbl_approve (req_id, ${approveField}, approve_status, approve_date)
-        VALUES (?, ?, ?, NOW())
-      `;
-      db.query(query, [req_id, mgr_id, is_approved ? 1 : 0], (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results.insertId);
-        }
-      });
-    });
-  },
-  
-  updateRequestStatus: (req_id, approve_id, status) => {
+  saveApproval: (req_id, mgr_id, is_approved) => {
     return new Promise((resolve, reject) => {
       const query = `
-        UPDATE tbl_requests
-        SET approve_id = ?, status = ?
-        WHERE req_id = ?
+        UPDATE tbl_approve
+        SET app_mgr = ?
+        WHERE approve_id = (
+          SELECT approve_id
+          FROM tbl_requests
+          WHERE req_id = ?
+        )
       `;
-      db.query(query, [approve_id, status, req_id], (error, results) => {
+      db.query(query, [mgr_id, req_id], (error, results) => {
         if (error) {
           reject(error);
         } else {
@@ -148,6 +132,60 @@ const requestMgrModel = {
       });
     });
   },
+  
+  updateRequestStatus: (req_id, is_approved) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE tbl_approve
+        SET app_mgr = ?
+        WHERE approve_id = (
+          SELECT approve_id
+          FROM tbl_requests
+          WHERE req_id = ?
+        )
+      `;
+      
+      const status = is_approved ? ApprovalStatus.APPROVE : ApprovalStatus.REJECT;
+      
+      db.query(query, [status, req_id], (error, results) => {
+        if (error) {
+          console.error('Error in updateRequestStatus:', error);
+          return reject(error);
+        }
+        if (results.affectedRows === 0) {
+          console.error('No rows updated for req_id:', req_id);
+          return reject(new Error('No rows updated'));
+        }
+        console.log(`Successfully updated status to ${status} for req_id: ${req_id}`);
+        resolve(true);
+      });
+    });
+  },
+
+  handleRequest: (req_id, is_approved) => {
+      return new Promise(async (resolve, reject) => {
+          try {
+              console.log('Processing request:', { req_id, is_approved }); // เพิ่ม log
+  
+              // เริ่ม transaction
+              await db.beginTransaction();
+  
+              // อัพเดทสถานะการอนุมัติ
+              await requestMgrModel.updateRequestStatus(req_id, is_approved);
+  
+              // Commit transaction
+              await db.commit();
+  
+              const status = is_approved ? 'อนุมัติ' : 'ปฏิเสธ';
+              resolve({ success: true, message: `คำขอซ่อมได้ถูก${status}เรียบร้อยแล้ว` });
+          } catch (error) {
+              // Rollback ในกรณีที่เกิดข้อผิดพลาด
+              await db.rollback();
+              console.error('Error in handleRequest:', error);
+              reject({ success: false, message: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+          }
+      });
+  }
 };
 
 module.exports = requestMgrModel;

@@ -69,3 +69,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+function handleRequest(reqId, isApproved) {
+    console.log('Handling request:', reqId, 'isApproved:', isApproved);
+    fetch('/request_mgr/handle_request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            req_id: reqId,
+            is_approved: isApproved
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(isApproved ? 'คำขอได้รับการอนุมัติแล้ว' : 'คำขอถูกปฏิเสธแล้ว');
+            window.location.href = '/request_mgr';
+        } else {
+            alert('เกิดข้อผิดพลาดในการดำเนินการ');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('เกิดข้อผิดพลาดในการดำเนินการ');
+    });
+}
+
+function approveRequest(reqId) {
+    if (confirm('คุณแน่ใจหรือไม่ที่จะอนุมัติคำขอซ่อมนี้?')) {
+        handleRequest(reqId, true);
+    }
+}
+
+function rejectRequest(reqId) {
+    if (confirm('คุณแน่ใจหรือไม่ที่จะปฏิเสธคำขอซ่อมนี้?')) {
+        handleRequest(reqId, false);
+    }
+}

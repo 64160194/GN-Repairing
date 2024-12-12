@@ -41,42 +41,19 @@ const requestMgrController = {
   },
 
   handleRequest: async (req, res) => {
-    try {
-      const { req_id, is_approved } = req.body;
-      const mgr_id = req.session.userId;
-      const role_id = req.session.roleId;
+      try {
+          const { req_id, is_approved } = req.body;
+          console.log('Received request:', { req_id, is_approved }); // เพิ่ม log เพื่อตรวจสอบค่าที่ได้รับ
   
-      let role;
-      switch (role_id) {
-        case 4: // สมมติว่า role_id 4 คือ manager
-          role = 'mgr';
-          break;
-        case 2: // สมมติว่า role_id 5 คือ HRGA
-          role = 'hrga';
-          break;
-        case 1: // สมมติว่า role_id 6 คือ admin
-          role = 'admin';
-          break;
-        default:
-          return res.status(403).json({ success: false, message: 'คุณไม่มีสิทธิ์ในการดำเนินการนี้' });
+          const result = await RequestMgrModel.handleRequest(req_id, is_approved);
+  
+          console.log('Processing result:', result); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์
+  
+          res.json(result);
+      } catch (error) {
+          console.error('Error in handleRequest:', error);
+          res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในระบบ' });
       }
-  
-      // บันทึกข้อมูลลงในตาราง tbl_approve
-      const approve_id = await RequestMgrModel.saveApproval(req_id, mgr_id, is_approved, role);
-  
-      if (approve_id) {
-        // อัพเดทสถานะของคำขอ
-        const status = is_approved ? 'approved' : 'rejected';
-        await RequestMgrModel.updateRequestStatus(req_id, approve_id, status);
-  
-        res.json({ success: true, message: is_approved ? 'อนุมัติคำขอเรียบร้อยแล้ว' : 'ปฏิเสธคำขอเรียบร้อยแล้ว' });
-      } else {
-        res.json({ success: false, message: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล' });
-      }
-    } catch (error) {
-      console.error('Error in handleRequest:', error);
-      res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในระบบ' });
-    }
   },
 };
 
