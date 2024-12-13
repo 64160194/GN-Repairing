@@ -72,6 +72,7 @@
                                             <th>Repair Item</th>
                                             <th>Location</th>
                                             <th>Repair Type</th>
+                                            <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -91,6 +92,17 @@
                                                 <td><%= request.repair_item %></td>
                                                 <td><%= request.location_n %></td>
                                                 <td><%= request.repair_type %></td>
+                                                <td>
+                                                    <% if (request.app_mgr === 'approve') { %>
+                                                        <span class="badge bg-success">approve</span>
+                                                    <% } else if (request.app_mgr === 'reject') { %>
+                                                        <span class="badge bg-danger">reject</span>
+                                                    <% } else if (request.app_mgr === null) { %>
+                                                        <span class="badge bg-warning text-dark">waiting</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">unknown</span>
+                                                    <% } %>
+                                                </td>
                                                 <td>
                                                     <a href="/request_mgr/view/<%= request.req_id %>" class="btn btn-primary btn-sm">View</a>
                                                 </td>

@@ -9,11 +9,10 @@ const requestMgrModel = {
   getRequestsByDepartment: (deptId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.req_id, r.u_id, r.repair_item, r.location_n, r.repair_type, r.date_time,
-               u.dept_id, u.f_name, u.l_name
+        SELECT r.*, u.f_name, u.l_name, u.u_mail, a.app_mgr
         FROM tbl_requests r
-        JOIN tbl_users u ON r.u_id = u.u_id
-        WHERE u.dept_id = ?
+        LEFT JOIN tbl_users u ON r.u_id = u.u_id
+        LEFT JOIN tbl_approve a ON r.approve_id = a.approve_id
         ORDER BY r.date_time DESC
       `;
       
@@ -50,10 +49,10 @@ const requestMgrModel = {
   getRequestDetails: (requestId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.*, u.f_name, u.l_name, u.u_mail, d.dept_name
+        SELECT r.*, u.f_name, u.l_name, u.u_mail, a.app_mgr
         FROM tbl_requests r
-        JOIN tbl_users u ON r.u_id = u.u_id
-        JOIN tbl_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN tbl_users u ON r.u_id = u.u_id
+        LEFT JOIN tbl_approve a ON r.approve_id = a.approve_id
         WHERE r.req_id = ?
       `;
       
