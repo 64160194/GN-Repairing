@@ -2,9 +2,43 @@ const sharp = require('sharp');
 const multer = require('multer');
 const { memoryStorage } = require('multer');
 const addRequestModel = require('../models/addRequestModel');
+const nodemailer = require('nodemailer');
 
-// Use memory storage for multer
 const upload = multer({ storage: memoryStorage() });
+
+async function sendEmailNotification(managerEmail, requestDetails) {
+  let transporter = nodemailer.createTransport({
+    host: "your-smtp-host",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: "your-email@example.com",
+      pass: "your-email-password",
+    },
+  });
+
+  let info = await transporter.sendMail({
+    from: '"GN Repairing System" <noreply@gnrepairing.com>',
+    to: managerEmail,
+    subject: "มีคำขอซ่อมใหม่",
+    text: `มีคำขอซ่อมใหม่เข้ามาในระบบ
+รายละเอียด:
+ประเภทการซ่อม: ${requestDetails.repair_type}
+รายการที่ต้องซ่อม: ${requestDetails.repair_item}
+อาการ/ปัญหา: ${requestDetails.sympton_def}
+สถานที่: ${requestDetails.location_n}`,
+    html: `<h1>มีคำขอซ่อมใหม่เข้ามาในระบบ</h1>
+<p><strong>รายละเอียด:</strong></p>
+<ul>
+  <li>ประเภทการซ่อม: ${requestDetails.repair_type}</li>
+  <li>รายการที่ต้องซ่อม: ${requestDetails.repair_item}</li>
+  <li>อาการ/ปัญหา: ${requestDetails.sympton_def}</li>
+  <li>สถานที่: ${requestDetails.location_n}</li>
+</ul>`,
+  });
+
+  console.log("Message sent: %s", info.messageId);
+}
 
 const addRequestController = {
   showAddRequestPage: async (req, res) => {
@@ -76,6 +110,15 @@ const addRequestController = {
 
         const newRequestId = await addRequestModel.addRequest(requestData);
 
+        // หลังจากบันทึกคำขอ ให้ดึงข้อมูลอีเมลของหัวหน้าแผนก
+        const userInfo = await addRequestModel.getUserInfo(req.session.userId);
+        const managerInfo = await addRequestModel.getDepartmentManager(userInfo.dept_id);
+
+        if (managerInfo && managerInfo.email) {
+          // ส่งอีเมลแจ้งเตือนไปยังหัวหน้าแผนก
+          await sendEmailNotification(managerInfo.email, requestData);
+        }
+        
         req.session.flash = { success: 'ได้ทำการบันทึกคำร้องขอแจ้งซ่อมของคุณแล้ว !' };
         res.redirect('/user_home');
       } catch (error) {

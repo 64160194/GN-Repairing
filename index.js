@@ -65,8 +65,6 @@ app.use('/report_issue', reportIssueRoutes);
 const maintenanceWorkerRoutes = require('./routes/maintenanceWorkerRoutes');
 app.use('/maintenance_worker', maintenanceWorkerRoutes);
 
-
-// เริ่ม server
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
   });
