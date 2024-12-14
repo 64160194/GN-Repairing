@@ -1,31 +1,29 @@
 
 function approveRequest(reqId) {
-    if (confirm('คุณแน่ใจหรือไม่ที่จะอนุมัติคำขอซ่อมนี้?')) {
-        // ส่ง request ไปยัง server เพื่ออนุมัติ
+    if (confirm('Are you sure you want to approve this repair request ?')) {
         fetch(`/request_mgr/approve/${reqId}`, { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('อนุมัติคำขอซ่อมเรียบร้อยแล้ว');
+                    alert('The repair request has been successfully approved.');
                     window.location.href = '/request_mgr';
                 } else {
-                    alert('เกิดข้อผิดพลาดในการอนุมัติคำขอซ่อม');
+                    alert('An error occurred while approving the repair request.');
                 }
             });
     }
 }
 
 function rejectRequest(reqId) {
-    if (confirm('คุณแน่ใจหรือไม่ที่จะปฏิเสธคำขอซ่อมนี้?')) {
-        // ส่ง request ไปยัง server เพื่อปฏิเสธ
+    if (confirm('Are you sure you want to reject this repair request?')) {
         fetch(`/request_mgr/reject/${reqId}`, { method: 'POST' })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('ปฏิเสธคำขอซ่อมเรียบร้อยแล้ว');
+                    alert('The repair request has been successfully rejected.');
                     window.location.href = '/request_mgr';
                 } else {
-                    alert('เกิดข้อผิดพลาดในการปฏิเสธคำขอซ่อม');
+                    alert('An error occurred while rejecting the repair request.');
                 }
             });
     }
@@ -48,12 +46,12 @@ function handleRequest(reqId, isApproved) {
             alert(data.message);
             window.location.href = '/request_mgr';
         } else {
-            alert('เกิดข้อผิดพลาด: ' + data.message);
+            alert('An error occurred.: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('เกิดข้อผิดพลาดในการส่งคำขอ');
+        alert('An error occurred while submitting the request.');
     });
 }
 
@@ -91,29 +89,26 @@ async function handleRequest(reqId, isApproved) {
         const data = await response.json();
 
         if (data.success) {
-            // อัปเดต UI โดยไม่ต้องรีโหลดหน้า
-            updateUI(isApproved);
-
             await Swal.fire({
                 icon: 'success',
-                title: isApproved ? 'อนุมัติสำเร็จ' : 'ปฏิเสธสำเร็จ',
-                text: isApproved ? 'คำขอได้รับการอนุมัติแล้ว' : 'คำขอถูกปฏิเสธแล้ว',
-                confirmButtonText: 'ตกลง'
+                title: isApproved ? 'Approval successful.' : 'Rejection successful.',
+                text: isApproved ? 'Request has been approved.' : 'The request has been rejected.',
+                confirmButtonText: 'Okay!'
             });
 
+            window.location.href = '/request_mgr';
         } else {
-            throw new Error(data.message || 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ');
+            throw new Error(data.message || 'An unknown error occurred.');
         }
     } catch (error) {
         console.error('Error:', error);
         await Swal.fire({
             icon: 'error',
-            title: 'เกิดข้อผิดพลาด',
-            text: error.message || 'เกิดข้อผิดพลาดในการดำเนินการ',
-            confirmButtonText: 'ตกลง'
+            title: 'An error occurred.',
+            text: error.message || 'An error occurred during the operation.',
+            confirmButtonText: 'Okay!'
         });
     } finally {
-        // Re-enable buttons
         document.querySelectorAll('button').forEach(btn => btn.disabled = false);
     }
 }
@@ -123,10 +118,8 @@ function updateUI(isApproved) {
     const rejectButton = document.querySelector('.btn-danger');
     const buttonContainer = approveButton.parentElement;
 
-    // ลบปุ่มทั้งหมด
     buttonContainer.innerHTML = '';
 
-    // เพิ่มปุ่มใหม่ตามสถานะ
     if (isApproved) {
         buttonContainer.innerHTML = '<button class="btn btn-success me-2" disabled>Approved</button>';
     } else {
@@ -134,36 +127,36 @@ function updateUI(isApproved) {
     }
 }
 
-function approveRequest(reqId) {
-    Swal.fire({
-        title: 'คุณแน่ใจหรือไม่?',
-        text: "ที่จะอนุมัติคำขอซ่อมนี้",
+async function approveRequest(reqId) {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Are you sure you want to approve this repair request?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'ใช่, อนุมัติ!',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            handleRequest(reqId, true);
-        }
+        confirmButtonText: 'Yes, approve it!',
+        cancelButtonText: 'Cancel'
     });
+
+    if (result.isConfirmed) {
+        await handleRequest(reqId, true);
+    }
 }
 
-function rejectRequest(reqId) {
-    Swal.fire({
-        title: 'คุณแน่ใจหรือไม่?',
-        text: "ที่จะปฏิเสธคำขอซ่อมนี้",
+async function rejectRequest(reqId) {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You want to reject this repair request?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'ใช่, ปฏิเสธ!',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            handleRequest(reqId, false);
-        }
+        confirmButtonText: 'Yes, reject it.!',
+        cancelButtonText: 'Cancel'
     });
+
+    if (result.isConfirmed) {
+        await handleRequest(reqId, false);
+    }
 }

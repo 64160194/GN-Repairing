@@ -215,10 +215,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 text-end">
-                                        <a href="/request_mgr" class="btn btn-secondary me-2">Cancel</a>
+                                        <a href="/request_mgr" class="btn btn-secondary me-2">Back</a>
                                         <% if (request.app_mgr === null || request.app_mgr === undefined || request.app_mgr === '') { %>
-                                            <button class="btn btn-success me-2" onclick="handleRequest('<%= request.req_id %>', true)">Approve</button>
-                                            <button class="btn btn-danger" onclick="handleRequest('<%= request.req_id %>', false)">Reject</button>
+                                            <button class="btn btn-success me-2" onclick="approveRequest('<%= request.req_id %>')">Approve</button>
+                                            <button class="btn btn-danger" onclick="rejectRequest('<%= request.req_id %>')">Reject</button>
                                         <% } else if (request.app_mgr === 'approve') { %>
                                             <button class="btn btn-success me-2" disabled>Approved</button>
                                         <% } else if (request.app_mgr === 'reject') { %>

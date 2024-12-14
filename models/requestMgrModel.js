@@ -92,9 +92,11 @@ const requestMgrModel = {
   getRequestById: (requestId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.*, a.app_mgr
+        SELECT r.*, a.app_mgr, u.f_name, u.l_name, u.u_mail, d.dept_name
         FROM tbl_requests r
+        LEFT JOIN tbl_users u ON r.u_id = u.u_id
         LEFT JOIN tbl_approve a ON r.approve_id = a.approve_id
+        LEFT JOIN tbl_dept d ON u.dept_id = d.dept_id
         WHERE r.req_id = ?
       `;
       
@@ -165,7 +167,6 @@ const requestMgrModel = {
   
               await db.beginTransaction();
   
-              // อัปเดตสถานะการอนุมัติและตรวจสอบผลลัพธ์
               const updateResult = await requestMgrModel.updateRequestStatus(req_id, is_approved);
               if (!updateResult) {
                   throw new Error('Failed to update request status');

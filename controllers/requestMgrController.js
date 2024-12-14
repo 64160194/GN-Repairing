@@ -22,20 +22,27 @@ const requestMgrController = {
 
   viewRequest: async (req, res) => {
     try {
+      console.log('Session data:', req.session);
+
       if (!req.session.userId || !req.session.deptId) {
+        console.log('User not authenticated, redirecting to login');
         return res.redirect('/');
       }
   
       const requestId = req.params.id;
+      console.log('Requested ID:', requestId);
+  
       const request = await RequestMgrModel.getRequestById(requestId);
+      console.log('Request data from database:', request);
+  
       const currentUser = await RequestMgrModel.getUserInfo(req.session.userId);
+      console.log('Current user data:', currentUser);
   
       if (!request) {
+        console.log('Request not found');
         return res.status(404).render('error', { message: 'Request not found.' });
       }
-  
-      console.log('Request data:', request);
-  
+
       res.render('request_mgr_view', { request, currentUser });
     } catch (error) {
       console.error('Error in viewRequest:', error);
@@ -53,7 +60,6 @@ const requestMgrController = {
           console.log('Processing result:', result);
   
           if (result.success) {
-              // อัปเดตสถานะในฐานข้อมูล
               await RequestMgrModel.updateRequestStatus(req_id, is_approved ? 'approved' : 'rejected');
           }
   
