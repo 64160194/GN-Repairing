@@ -92,19 +92,19 @@ const requestMgrModel = {
   getRequestById: (requestId) => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.*, u.f_name, u.l_name, u.u_mail, d.dept_name
+        SELECT r.*, a.app_mgr
         FROM tbl_requests r
-        JOIN tbl_users u ON r.u_id = u.u_id
-        JOIN tbl_dept d ON u.dept_id = d.dept_id
+        LEFT JOIN tbl_approve a ON r.approve_id = a.approve_id
         WHERE r.req_id = ?
       `;
       
       db.query(query, [requestId], (error, results) => {
         if (error) {
+          console.error('Error getting request by ID:', error);
           return reject(error);
         }
         if (results.length === 0) {
-          return reject(new Error('Request not found'));
+          return resolve(null);
         }
         resolve(results[0]);
       });
@@ -133,58 +133,74 @@ const requestMgrModel = {
   },
   
   updateRequestStatus: (req_id, is_approved) => {
-    return new Promise((resolve, reject) => {
-      const query = `
-        UPDATE tbl_approve
-        SET app_mgr = ?
-        WHERE approve_id = (
-          SELECT approve_id
-          FROM tbl_requests
-          WHERE req_id = ?
-        )
-      `;
-      
-      const status = is_approved ? ApprovalStatus.APPROVE : ApprovalStatus.REJECT;
-      
-      db.query(query, [status, req_id], (error, results) => {
-        if (error) {
-          console.error('Error in updateRequestStatus:', error);
-          return reject(error);
-        }
-        if (results.affectedRows === 0) {
-          console.error('No rows updated for req_id:', req_id);
-          return reject(new Error('No rows updated'));
-        }
-        console.log(`Successfully updated status to ${status} for req_id: ${req_id}`);
-        resolve(true);
+      return new Promise((resolve, reject) => {
+          const query = `
+              UPDATE tbl_approve a
+              JOIN tbl_requests r ON a.approve_id = r.approve_id
+              SET a.app_mgr = ?
+              WHERE r.req_id = ?
+          `;
+          
+          const status = is_approved ? ApprovalStatus.APPROVE : ApprovalStatus.REJECT;
+          
+          db.query(query, [status, req_id], (error, results) => {
+              if (error) {
+                  console.error('Error in updateRequestStatus:', error);
+                  return reject(error);
+              }
+              if (results.affectedRows === 0) {
+                  console.error('No rows updated for req_id:', req_id);
+                  return reject(new Error('No rows updated'));
+              }
+              console.log(`Successfully updated status to ${status} for req_id: ${req_id}`);
+              resolve(true);
+          });
       });
-    });
   },
 
   handleRequest: (req_id, is_approved) => {
       return new Promise(async (resolve, reject) => {
           try {
-              console.log('Processing request:', { req_id, is_approved }); // เพิ่ม log
+              console.log('Processing request:', { req_id, is_approved });
   
-              // เริ่ม transaction
               await db.beginTransaction();
   
-              // อัพเดทสถานะการอนุมัติ
-              await requestMgrModel.updateRequestStatus(req_id, is_approved);
+              // อัปเดตสถานะการอนุมัติและตรวจสอบผลลัพธ์
+              const updateResult = await requestMgrModel.updateRequestStatus(req_id, is_approved);
+              if (!updateResult) {
+                  throw new Error('Failed to update request status');
+              }
   
-              // Commit transaction
               await db.commit();
   
               const status = is_approved ? 'อนุมัติ' : 'ปฏิเสธ';
               resolve({ success: true, message: `คำขอซ่อมได้ถูก${status}เรียบร้อยแล้ว` });
           } catch (error) {
-              // Rollback ในกรณีที่เกิดข้อผิดพลาด
               await db.rollback();
               console.error('Error in handleRequest:', error);
-              reject({ success: false, message: 'เกิดข้อผิดพลาดในการดำเนินการ' });
+              reject({ success: false, message: 'เกิดข้อผิดพลาดในการดำเนินการ: ' + error.message });
           }
       });
-  }
+  },
+
+  refreshRequestData: (requestId) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT r.*, a.app_mgr
+        FROM tbl_requests r
+        LEFT JOIN tbl_approve a ON r.approve_id = a.approve_id
+        WHERE r.req_id = ?
+      `;
+      
+      db.query(query, [requestId], (error, results) => {
+        if (error) {
+          console.error('Error refreshing request data:', error);
+          return reject(error);
+        }
+        resolve(results[0]);
+      });
+    });
+  },
 };
 
 module.exports = requestMgrModel;

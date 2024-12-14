@@ -25,17 +25,20 @@ const requestMgrController = {
       if (!req.session.userId || !req.session.deptId) {
         return res.redirect('/');
       }
-
+  
       const requestId = req.params.id;
       const request = await RequestMgrModel.getRequestById(requestId);
       const currentUser = await RequestMgrModel.getUserInfo(req.session.userId);
-
+  
       if (!request) {
         return res.status(404).render('error', { message: 'Request not found.' });
       }
-
+  
+      console.log('Request data:', request);
+  
       res.render('request_mgr_view', { request, currentUser });
     } catch (error) {
+      console.error('Error in viewRequest:', error);
       res.status(500).render('error', { message: 'An error occurred while loading the request details.' });
     }
   },
@@ -43,11 +46,16 @@ const requestMgrController = {
   handleRequest: async (req, res) => {
       try {
           const { req_id, is_approved } = req.body;
-          console.log('Received request:', { req_id, is_approved }); // เพิ่ม log เพื่อตรวจสอบค่าที่ได้รับ
+          console.log('Received request:', { req_id, is_approved });
   
           const result = await RequestMgrModel.handleRequest(req_id, is_approved);
   
-          console.log('Processing result:', result); // เพิ่ม log เพื่อตรวจสอบผลลัพธ์
+          console.log('Processing result:', result);
+  
+          if (result.success) {
+              // อัปเดตสถานะในฐานข้อมูล
+              await RequestMgrModel.updateRequestStatus(req_id, is_approved ? 'approved' : 'rejected');
+          }
   
           res.json(result);
       } catch (error) {
