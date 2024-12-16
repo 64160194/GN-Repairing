@@ -1,26 +1,5 @@
 const db = require('../config/database');
-const nodemailer = require('nodemailer');
-
-const sendEmail = async (to, subject, html) => {
-  let transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "64160194@go.buu.ac.th",
-      pass: "fltv pagw ndou bjmi",
-    },
-  });
-
-  let info = await transporter.sendMail({
-    from: '"General Repairing System" <your-email@example.com>',
-    to: to,
-    subject: subject,
-    html: html,
-  });
-
-  console.log("Message sent: %s", info.messageId);
-};
+const emailService = require('../services/emailService');
 
 const addRequestModel = {
   getUserInfo: (userId) => {
@@ -118,14 +97,14 @@ const addRequestModel = {
       const newId = maxId + 1;
       const approveId = await addRequestModel.createApproveRecord();
       const workerId = await addRequestModel.createWorkerRecord();
-
+  
       return new Promise((resolve, reject) => {
         const query = `
           INSERT INTO tbl_requests 
           (req_id, u_id, repair_item, sympton_def, location_n, repair_type, other_type, r_pic1, r_pic2, r_pic3, date_time, approve_id, worker_id)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
         `;
-
+  
         const values = [
           newId,
           requestData.u_id,
@@ -140,7 +119,7 @@ const addRequestModel = {
           approveId,
           workerId
         ];
-
+  
         db.query(query, values, async (error, results) => {
           if (error) {
             console.error('Error in addRequest:', error);
@@ -148,115 +127,22 @@ const addRequestModel = {
           } else {
             try {
               const user = await addRequestModel.getUserById(requestData.u_id);
+              if (!user) {
+                console.warn('User not found. Skipping email notifications.');
+                resolve(newId);
+                return;
+              }
+  
               const manager = await addRequestModel.getDepartmentManager(user.dept_id);
+              
               if (manager && manager.u_mail) {
-                const subject = "แจ้งเตือน: มีคำขอซ่อมใหม่";
-                const html = `
-                  <html>
-                    <head>
-                      <meta charset="UTF-8">
-                      <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
-                      <style>
-                        body { 
-                          font-family: 'Kanit', sans-serif; 
-                          line-height: 1.6; 
-                          color: #333; 
-                          background-color: #f6f6f6;
-                          margin: 0;
-                          padding: 0;
-                        }
-                        .container { 
-                          width: 100%; 
-                          max-width: 600px; 
-                          margin: 0 auto; 
-                          background-color: #ffffff;
-                          box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                        }
-                        .header { 
-                          background-color: #007bff; 
-                          color: #ffffff;
-                          padding: 20px; 
-                          text-align: center; 
-                        }
-                        .content { padding: 30px; }
-                        .footer { 
-                          background-color: #f8f9fa; 
-                          color: #6c757d;
-                          padding: 15px; 
-                          text-align: center; 
-                          font-size: 14px; 
-                        }
-                        table { 
-                          width: 100%; 
-                          border-collapse: separate; 
-                          border-spacing: 0 10px;
-                        }
-                        th, td { 
-                          padding: 12px; 
-                          text-align: left;
-                          border-bottom: 1px solid #dee2e6; 
-                        }
-                        th { 
-                          background-color: #e9ecef; 
-                          font-weight: bold; 
-                          color: #495057;
-                        }
-                        .button { 
-                          display: inline-block; 
-                          padding: 12px 24px; 
-                          background-color: #28a745; 
-                          color: #ffffff !important; 
-                          text-decoration: none; 
-                          border-radius: 5px; 
-                          font-weight: bold;
-                          text-align: center;
-                          transition: background-color 0.3s ease;
-                        }
-                        .button:hover {
-                          background-color: #218838;
-                        }
-                        .section-title {
-                          border-bottom: 2px solid #007bff;
-                          padding-bottom: 10px;
-                          margin-top: 30px;
-                          color: #007bff;
-                        }
-                      </style>
-                    </head>
-                    <body>
-                      <div class="container">
-                        <div class="header">
-                          <h1 style="margin: 0;">แจ้งเตือน: มีคำขอซ่อมใหม่</h1>
-                        </div>
-                        <div class="content">
-                          <h2 class="section-title">ข้อมูลผู้แจ้งซ่อม</h2>
-                          <table>
-                            <tr><th>ชื่อ-นามสกุล:</th><td>${user.f_name} ${user.l_name}</td></tr>
-                            <tr><th>แผนก:</th><td>${user.dept_name}</td></tr>
-                          </table>
-                          
-                          <h2 class="section-title">รายละเอียดการแจ้งซ่อม</h2>
-                          <table>
-                            <tr><th>อุปกรณ์ที่ต้องการซ่อม:</th><td>${requestData.repair_item}</td></tr>
-                            <tr><th>อาการ:</th><td>${requestData.sympton_def}</td></tr>
-                            <tr><th>สถานที่:</th><td>${requestData.location_n}</td></tr>
-                          </table>
-
-                          <p style="text-align: center; margin-top: 30px;">
-                            <a href="http://localhost:3000/" class="button">กดเพื่อดำเนินการต่อ</a>
-                          </p>
-                        </div>
-                        <div class="footer">
-                          <p>หากมีข้อสงสัยกรุณาติดต่อฝ่าย IT | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
-                        </div>
-                      </div>
-                    </body>
-                  </html>
-                `;
-                await sendEmail(manager.u_mail, subject, html);
+                await emailService.sendNewRequestNotification(user, manager, requestData);
+              } else {
+                console.warn('Manager email not found. Skipping manager notification.');
               }
             } catch (emailError) {
               console.error('Error sending email:', emailError);
+              // ยังคง resolve เพื่อให้การบันทึกคำขอสำเร็จ แม้ว่าการส่งอีเมลจะล้มเหลว
             }
             resolve(newId);
           }
