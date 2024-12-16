@@ -1,4 +1,5 @@
 const RequestMgrModel = require('../models/requestMgrModel');
+const emailService = require('../services/emailService');
 
 const requestMgrController = {
   showRequestMgr: async (req, res) => {
@@ -61,6 +62,25 @@ const requestMgrController = {
   
           if (result.success) {
               await RequestMgrModel.updateRequestStatus(req_id, is_approved ? 'approved' : 'rejected');
+  
+              if (is_approved) {
+                  // Get request details
+                  const request = await RequestMgrModel.getRequestById(req_id);
+                  
+                  // Get approver details (current user)
+                  const approver = await RequestMgrModel.getUserInfo(req.session.userId);
+                  
+                  // Get HR&GA manager (role_id 2)
+                  const hrgaManager = await RequestMgrModel.getUserByRoleId(2);
+                  
+                  if (hrgaManager) {
+                      // Send email notification to HR&GA manager
+                      await emailService.sendApprovalNotificationToHRGA(request, approver, hrgaManager);
+                      console.log('Email sent to HR&GA manager');
+                  } else {
+                      console.log('HR&GA manager not found');
+                  }
+              }
           }
   
           res.json(result);
@@ -69,6 +89,7 @@ const requestMgrController = {
           res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในระบบ' });
       }
   },
+
 };
 
 module.exports = requestMgrController;

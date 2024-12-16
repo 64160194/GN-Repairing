@@ -202,6 +202,20 @@ const requestMgrModel = {
       });
     });
   },
+
+  getUserByRoleId: (roleId) => {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM tbl_users WHERE role_id = ? LIMIT 1';
+      db.query(query, [roleId], (error, results) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results[0] || null);
+        }
+      });
+    });
+  },
+  
 };
 
 module.exports = requestMgrModel;
