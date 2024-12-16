@@ -1,11 +1,11 @@
 const db = require('../config/database');
 const nodemailer = require('nodemailer');
 
-const sendEmail = async (to, subject, text) => {
+const sendEmail = async (to, subject, html) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
       user: "64160194@go.buu.ac.th",
       pass: "fltv pagw ndou bjmi",
@@ -16,7 +16,7 @@ const sendEmail = async (to, subject, text) => {
     from: '"General Repairing System" <your-email@example.com>',
     to: to,
     subject: subject,
-    text: text,
+    html: html,
   });
 
   console.log("Message sent: %s", info.messageId);
@@ -59,7 +59,6 @@ const addRequestModel = {
 
   createApproveRecord: () => {
     return new Promise((resolve, reject) => {
-      // First, get the maximum approve_id
       const getMaxIdQuery = 'SELECT MAX(approve_id) as maxId FROM tbl_approve';
       db.query(getMaxIdQuery, (error, results) => {
         if (error) {
@@ -69,7 +68,6 @@ const addRequestModel = {
   
         const newId = (results[0].maxId || 0) + 1;
   
-        // Now insert the new record with the new ID
         const insertQuery = `
           INSERT INTO tbl_approve (approve_id, app_mgr, app_hrga, app_admin) 
           VALUES (?, NULL, NULL, NULL)
@@ -88,7 +86,6 @@ const addRequestModel = {
 
   createWorkerRecord: () => {
     return new Promise((resolve, reject) => {
-      // First, get the maximum worker_id
       const getMaxIdQuery = 'SELECT MAX(worker_id) as maxId FROM tbl_worker';
       db.query(getMaxIdQuery, (error, results) => {
         if (error) {
@@ -98,7 +95,6 @@ const addRequestModel = {
   
         const newId = (results[0].maxId || 0) + 1;
   
-        // Now insert the new record with the new ID
         const insertQuery = `
           INSERT INTO tbl_worker 
           (worker_id, survey_results, edit_details, date_by, finish_time, edit_by, budget_by) 
@@ -150,14 +146,114 @@ const addRequestModel = {
             console.error('Error in addRequest:', error);
             reject(error);
           } else {
-            // ส่งอีเมลแจ้งเตือนหัวหน้าแผนก
             try {
               const user = await addRequestModel.getUserById(requestData.u_id);
               const manager = await addRequestModel.getDepartmentManager(user.dept_id);
               if (manager && manager.u_mail) {
                 const subject = "แจ้งเตือน: มีคำขอซ่อมใหม่";
-                const text = `มีคำขอซ่อมใหม่จาก ${user.f_name} ${user.l_name} แผนก ${user.dept_name}\nรายละเอียด: ${requestData.repair_item}\nอาการ: ${requestData.sympton_def}\nสถานที่: ${requestData.location_n}`;
-                await sendEmail(manager.u_mail, subject, text);
+                const html = `
+                  <html>
+                    <head>
+                      <meta charset="UTF-8">
+                      <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+                      <style>
+                        body { 
+                          font-family: 'Kanit', sans-serif; 
+                          line-height: 1.6; 
+                          color: #333; 
+                          background-color: #f6f6f6;
+                          margin: 0;
+                          padding: 0;
+                        }
+                        .container { 
+                          width: 100%; 
+                          max-width: 600px; 
+                          margin: 0 auto; 
+                          background-color: #ffffff;
+                          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                        }
+                        .header { 
+                          background-color: #007bff; 
+                          color: #ffffff;
+                          padding: 20px; 
+                          text-align: center; 
+                        }
+                        .content { padding: 30px; }
+                        .footer { 
+                          background-color: #f8f9fa; 
+                          color: #6c757d;
+                          padding: 15px; 
+                          text-align: center; 
+                          font-size: 14px; 
+                        }
+                        table { 
+                          width: 100%; 
+                          border-collapse: separate; 
+                          border-spacing: 0 10px;
+                        }
+                        th, td { 
+                          padding: 12px; 
+                          text-align: left;
+                          border-bottom: 1px solid #dee2e6; 
+                        }
+                        th { 
+                          background-color: #e9ecef; 
+                          font-weight: bold; 
+                          color: #495057;
+                        }
+                        .button { 
+                          display: inline-block; 
+                          padding: 12px 24px; 
+                          background-color: #28a745; 
+                          color: #ffffff !important; 
+                          text-decoration: none; 
+                          border-radius: 5px; 
+                          font-weight: bold;
+                          text-align: center;
+                          transition: background-color 0.3s ease;
+                        }
+                        .button:hover {
+                          background-color: #218838;
+                        }
+                        .section-title {
+                          border-bottom: 2px solid #007bff;
+                          padding-bottom: 10px;
+                          margin-top: 30px;
+                          color: #007bff;
+                        }
+                      </style>
+                    </head>
+                    <body>
+                      <div class="container">
+                        <div class="header">
+                          <h1 style="margin: 0;">แจ้งเตือน: มีคำขอซ่อมใหม่</h1>
+                        </div>
+                        <div class="content">
+                          <h2 class="section-title">ข้อมูลผู้แจ้งซ่อม</h2>
+                          <table>
+                            <tr><th>ชื่อ-นามสกุล:</th><td>${user.f_name} ${user.l_name}</td></tr>
+                            <tr><th>แผนก:</th><td>${user.dept_name}</td></tr>
+                          </table>
+                          
+                          <h2 class="section-title">รายละเอียดการแจ้งซ่อม</h2>
+                          <table>
+                            <tr><th>อุปกรณ์ที่ต้องการซ่อม:</th><td>${requestData.repair_item}</td></tr>
+                            <tr><th>อาการ:</th><td>${requestData.sympton_def}</td></tr>
+                            <tr><th>สถานที่:</th><td>${requestData.location_n}</td></tr>
+                          </table>
+
+                          <p style="text-align: center; margin-top: 30px;">
+                            <a href="http://localhost:3000/" class="button">กดเพื่อดำเนินการต่อ</a>
+                          </p>
+                        </div>
+                        <div class="footer">
+                          <p>หากมีข้อสงสัยกรุณาติดต่อฝ่าย IT | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
+                        </div>
+                      </div>
+                    </body>
+                  </html>
+                `;
+                await sendEmail(manager.u_mail, subject, html);
               }
             } catch (emailError) {
               console.error('Error sending email:', emailError);
