@@ -12,7 +12,7 @@ const RequestMgrAdminModel = {
         WHERE a.app_mgr = 'approve'
         ORDER BY r.date_time DESC
       `;
-      
+
       db.query(query, (error, results) => {
         if (error) {
           return reject(error);
@@ -32,7 +32,7 @@ const RequestMgrAdminModel = {
         JOIN tbl_approve a ON r.approve_id = a.approve_id
         WHERE r.req_id = ?
       `;
-      
+
       db.query(query, [requestId], (error, results) => {
         if (error) {
           return reject(error);
@@ -41,6 +41,23 @@ const RequestMgrAdminModel = {
       });
     });
   },
+
+  updateApprovalStatus: (reqId, status) => {
+    return new Promise((resolve, reject) => {
+        const query = `
+            UPDATE tbl_approve
+            SET app_hrga = ?
+            WHERE approve_id = (SELECT approve_id FROM tbl_requests WHERE req_id = ?)
+        `;
+        
+        db.query(query, [status, reqId], (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(results.affectedRows > 0);
+        });
+    });
+},
 
   // Add more model methods as needed
 };

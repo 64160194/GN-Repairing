@@ -81,7 +81,7 @@
                                                         </th>
                                                         <td>
                                                             <%= request.f_name %>
-                                                            <%= request.l_name %>
+                                                                <%= request.l_name %>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -143,7 +143,8 @@
                                                                 <th scope="row">
                                                                     <strong class="fs-6">Nature of the defect</strong>
                                                                     <br>
-                                                                    <small class="text-muted">(อาการ/ลักษณะการชำรุด)</small>
+                                                                    <small
+                                                                        class="text-muted">(อาการ/ลักษณะการชำรุด)</small>
                                                                 </th>
                                                                 <td>
                                                                     <%= request.sympton_def %>
@@ -186,8 +187,9 @@
                                                                     <small class="text-muted">(วัน/ เวลาที่แจ้ง)</small>
                                                                 </th>
                                                                 <td>
-                                                                    <%= new Date(request.date_time).toLocaleString('th-TH', {
-                                                                        dateStyle: 'long' , timeStyle: 'short' }) %>
+                                                                    <%= new
+                                                                        Date(request.date_time).toLocaleString('th-TH',
+                                                                        { dateStyle: 'long' , timeStyle: 'short' }) %>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -204,21 +206,25 @@
                                                 <% if (request.r_pic1) { %>
                                                     <div class="m-2">
                                                         <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic1).toString('base64') %>"
-                                                            alt="Image 1" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
+                                                            alt="Image 1" class="img-fluid mb-2 clickable-image"
+                                                            style="max-width: 400px; cursor: pointer;">
                                                     </div>
-                                                <% } %>
-                                                <% if (request.r_pic2) { %>
-                                                    <div class="m-2">
-                                                        <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic2).toString('base64') %>"
-                                                            alt="Image 2" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
-                                                    </div>
-                                                <% } %>
-                                                <% if (request.r_pic3) { %>
-                                                    <div class="m-2">
-                                                        <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic3).toString('base64') %>"
-                                                            alt="Image 3" class="img-fluid mb-2 clickable-image" style="max-width: 400px; cursor: pointer;">
-                                                    </div>
-                                                <% } %>
+                                                    <% } %>
+                                                        <% if (request.r_pic2) { %>
+                                                            <div class="m-2">
+                                                                <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic2).toString('base64') %>"
+                                                                    alt="Image 2" class="img-fluid mb-2 clickable-image"
+                                                                    style="max-width: 400px; cursor: pointer;">
+                                                            </div>
+                                                            <% } %>
+                                                                <% if (request.r_pic3) { %>
+                                                                    <div class="m-2">
+                                                                        <img src="data:image/jpeg;base64,<%= Buffer.from(request.r_pic3).toString('base64') %>"
+                                                                            alt="Image 3"
+                                                                            class="img-fluid mb-2 clickable-image"
+                                                                            style="max-width: 400px; cursor: pointer;">
+                                                                    </div>
+                                                                    <% } %>
                                             </div>
                                         </div>
                                     </div>
@@ -238,7 +244,9 @@
                                                                 <strong class="fs-6">สถานะการอนุมัติ</strong>
                                                             </th>
                                                             <td>
-                                                                <%= request.app_mgr === 'approve' ? 'อนุมัติ' : (request.app_mgr === 'reject' ? 'ปฏิเสธ' : 'รอการอนุมัติ') %>
+                                                                <%= request.app_mgr==='approve' ? 'อนุมัติ' :
+                                                                    (request.app_mgr==='reject' ? 'ปฏิเสธ'
+                                                                    : 'รอการอนุมัติ' ) %>
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -262,7 +270,9 @@
                                                                 <strong class="fs-6">วันที่อนุมัติ</strong>
                                                             </th>
                                                             <td>
-                                                                <%= request.approval_date ? new Date(request.approval_date).toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' }) : '-' %>
+                                                                <%= request.approval_date ? new
+                                                                    Date(request.approval_date).toLocaleString('th-TH',
+                                                                    { dateStyle: 'long' , timeStyle: 'short' }) : '-' %>
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -271,21 +281,25 @@
                                         </div>
                                     </div>
 
-                                    <% if (request.app_hrga !=='approve' && request.app_hrga !=='reject' ) { %>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="mb-3">
-                                                    <label for="comment" class="form-label">ความคิดเห็น</label>
-                                                    <textarea class="form-control" id="comment" name="comment"
-                                                        rows="3"></textarea>
-                                                </div>
-                                                <button onclick="handleRequest('<%= request.req_id %>', true)"
-                                                    class="btn btn-success">อนุมัติ</button>
-                                                <button onclick="handleRequest('<%= request.req_id %>', false)"
-                                                    class="btn btn-danger">ปฏิเสธ</button>
-                                            </div>
+                                    <div class="row">
+                                        <div class="col-md-12 text-end">
+                                            <a href="/request_mgradmin" class="btn btn-secondary me-2">Back</a>
+                                            <% if (request.app_hrga===null || request.app_hrga===undefined ||
+                                                request.app_mgr==='' ) { %>
+                                                <button class="btn btn-success me-2"
+                                                    onclick="approveRequest('<%= request.req_id %>')">Approve</button>
+                                                <button class="btn btn-danger"
+                                                    onclick="rejectRequest('<%= request.req_id %>')">Reject</button>
+                                                <% } else if (request.app_hrga==='approve' ) { %>
+                                                    <button class="btn btn-success me-2" disabled>Approved</button>
+                                                    <% } else if (request.app_hrga==='reject' ) { %>
+                                                        <button class="btn btn-danger" disabled>Rejected</button>
+                                                        <% } else { %>
+                                                            <p>Unknown status: <%= request.app_hrga %>
+                                                            </p>
+                                                            <% } %>
                                         </div>
-                                        <% } %>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -295,6 +309,8 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="/js/request_mgradmin_view.js"></script>
 </body>
 
 </html>

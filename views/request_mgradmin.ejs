@@ -83,11 +83,13 @@
                                                 <td><%= request.location_n %></td>
                                                 <td>
                                                     <% if (request.app_hrga === 'approve') { %>
-                                                        <span class="badge bg-success">อนุมัติ</span>
+                                                        <span class="badge bg-success">approve</span>
                                                     <% } else if (request.app_hrga === 'reject') { %>
-                                                        <span class="badge bg-danger">ปฏิเสธ</span>
+                                                        <span class="badge bg-danger">reject</span>
+                                                    <% } else if (request.app_hrga === null) { %>
+                                                        <span class="badge bg-warning text-dark">waiting</span>
                                                     <% } else { %>
-                                                        <span class="badge bg-warning text-dark">รอดำเนินการ</span>
+                                                        <span class="badge bg-secondary">unknown</span>
                                                     <% } %>
                                                 </td>
                                                 <td>
