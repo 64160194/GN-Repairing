@@ -4,9 +4,8 @@ const requestMgrAdminController = require('../controllers/requestMgrAdminControl
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// Assuming role ID 5 is for HR&GA manager
 router.get('/', authMiddleware, roleMiddleware(2), requestMgrAdminController.showRequestMgrAdminPage);
-
-// Add more routes as needed
+router.get('/view/:id', authMiddleware, roleMiddleware(2), requestMgrAdminController.viewRequest);
+router.post('/handle_request', authMiddleware, roleMiddleware(2), requestMgrAdminController.handleRequest);
 
 module.exports = router;

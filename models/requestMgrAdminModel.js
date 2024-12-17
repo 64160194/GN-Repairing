@@ -1,15 +1,15 @@
 const db = require('../config/database');
 
 const RequestMgrAdminModel = {
-  getAllRequests: () => {
+  getAllApprovedRequests: () => {
     return new Promise((resolve, reject) => {
       const query = `
-        SELECT r.*, u.u_name, d.dept_name, rt.role_name
+        SELECT r.*, u.f_name, u.l_name, d.dept_name, a.app_mgr
         FROM tbl_requests r
         JOIN tbl_users u ON r.u_id = u.u_id
         JOIN tbl_dept d ON u.dept_id = d.dept_id
-        JOIN tbl_role rt ON u.role_id = rt.role_id
-        WHERE d.dept_id = 1  -- Assuming 1 is the department ID for HR&GA
+        JOIN tbl_approve a ON r.approve_id = a.approve_id
+        WHERE a.app_mgr = 'approve'
         ORDER BY r.date_time DESC
       `;
       
@@ -18,6 +18,26 @@ const RequestMgrAdminModel = {
           return reject(error);
         }
         resolve(results);
+      });
+    });
+  },
+
+  getRequestById: (requestId) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT r.*, u.f_name, u.l_name, u.u_mail, d.dept_name, a.app_mgr
+        FROM tbl_requests r
+        JOIN tbl_users u ON r.u_id = u.u_id
+        JOIN tbl_dept d ON u.dept_id = d.dept_id
+        JOIN tbl_approve a ON r.approve_id = a.approve_id
+        WHERE r.req_id = ?
+      `;
+      
+      db.query(query, [requestId], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results[0] || null);
       });
     });
   },
