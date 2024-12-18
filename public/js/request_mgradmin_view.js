@@ -1,38 +1,13 @@
-async function handleRequest(reqId, action) {
-    try {
-        const response = await fetch('/request_mgradmin/handle_request', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ req_id: reqId, action: action }),
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const approveBtn = document.getElementById('approveBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const result = await response.json();
-
-        if (result.success) {
-            Swal.fire({
-                icon: 'success',
-                title: action === 'approve' ? 'Request Approved' : 'Request Rejected',
-                text: result.message,
-            }).then(() => {
-                window.location.href = '/request_mgradmin';
-            });
-        } else {
-            throw new Error(result.message || 'An error occurred');
-        }
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message,
-        });
+    if (approveBtn && approveBtn.disabled) {
+        if (rejectBtn) rejectBtn.style.display = 'none';
+    } else if (rejectBtn && rejectBtn.disabled) {
+        if (approveBtn) approveBtn.style.display = 'none';
     }
-}
+});
 
 function approveRequest(reqId) {
     Swal.fire({
@@ -64,4 +39,57 @@ function rejectRequest(reqId) {
             handleRequest(reqId, 'reject');
         }
     });
+}
+
+async function handleRequest(reqId, action) {
+    try {
+        const response = await fetch('/request_mgradmin/handle_request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ req_id: reqId, action: action }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: action === 'approve' ? 'Request Approved' : 'Request Rejected',
+                text: result.message,
+            }).then(() => {
+                // Update the UI with the new data
+                updateUIWithNewData(result.updatedRequest);
+            });
+        } else {
+            throw new Error(result.message || 'An error occurred');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message,
+        });
+    }
+}
+
+function updateUI(action) {
+    const approveBtn = document.getElementById('approveBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
+    
+    if (action === 'approve') {
+        approveBtn.disabled = true;
+        approveBtn.textContent = 'Approved';
+        if (rejectBtn) rejectBtn.style.display = 'none';
+    } else if (action === 'reject') {
+        rejectBtn.disabled = true;
+        rejectBtn.textContent = 'Rejected';
+        if (approveBtn) approveBtn.style.display = 'none';
+    }
 }
