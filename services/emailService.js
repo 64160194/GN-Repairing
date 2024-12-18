@@ -23,7 +23,7 @@ const emailService = {
   },
 
   sendNewRequestNotification: async (user, manager, requestData) => {
-    const subject = "แจ้งเตือน: มีคำขอซ่อมใหม่จากพนักงานในแผนก";
+    const subject = "แจ้งเตือน: มีใบแจ้งซ่อมทั่วไปจากพนักงานในแผนก";
     const html = `
       <html>
         <head>
@@ -37,13 +37,13 @@ const emailService = {
             .footer { background-color: #f1f1f1; padding: 10px; text-align: center; }
             table { width: 100%; border-collapse: collapse; }
             th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            .button { background-color: #FFFF00; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; }
+            .button { background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; display: inline-block; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1 style="margin: 0;">แจ้งเตือน: มีคำขอซ่อมใหม่จากพนักงานในแผนก</h1>
+              <h1 style="margin: 0;">แจ้งเตือน: มีใบแจ้งซ่อมทั่วไปจากพนักงานในแผนก</h1>
             </div>
             <div class="content">
               <h2>ข้อมูลผู้แจ้งซ่อม</h2>
@@ -64,7 +64,7 @@ const emailService = {
               </p>
             </div>
             <div class="footer">
-              <p>หากมีข้อสงสัยกรุณาติดต่อฝ่าย IT | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
+              <p>หากมีข้อสงสัยกรุณาติดต่อแผนก HR&GA | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
             </div>
           </div>
         </body>
@@ -74,7 +74,7 @@ const emailService = {
   },
 
   sendApprovalNotificationToHRGA: async (request, approver, hrgaManager) => {
-    const subject = "แจ้งเตือน: คำขอซ่อมได้รับการอนุมัติจากหัวหน้าแผนก";
+    const subject = "แจ้งเตือน: มีใบแจ้งซ่อมทั่วไปได้รับการอนุมัติจากหัวหน้าแผนก";
     const html = `
       <html>
         <head>
@@ -98,16 +98,18 @@ const emailService = {
             </div>
             <div class="content">
               <tr><th>มีคำขอร้องแจ้งซ่อมที่ได้รับการ Approve แล้วจากแผนก ${request.dept_name} </tr></th>
-              <h2>รายละเอียดคำขอซ่อม</h2>
-              <table>
+              <h2>ข้อมูลผู้แจ้งซ่อม</h2>
+               <table>
                 <tr><th>เลขที่คำขอ:</th><td>${request.req_id}</td></tr>
                 <tr><th>ผู้แจ้งซ่อม:</th><td>${request.f_name} ${request.l_name}</td></tr>
                 <tr><th>แผนก:</th><td>${request.dept_name}</td></tr>
+              </table>
+              <h2>รายละเอียดคำขอซ่อม</h2>
+              <table>
                 <tr><th>อุปกรณ์ที่ต้องการซ่อม:</th><td>${request.repair_item}</td></tr>
                 <tr><th>อาการ:</th><td>${request.sympton_def}</td></tr>
                 <tr><th>สถานที่:</th><td>${request.location_n}</td></tr>
               </table>
-              
               <h2>ข้อมูลการอนุมัติ</h2>
               <table>
                 <tr><th>ผู้อนุมัติ:</th><td>${approver.f_name} ${approver.l_name}</td></tr>
@@ -120,7 +122,7 @@ const emailService = {
               </p>
             </div>
             <div class="footer">
-              <p>หากมีข้อสงสัยกรุณาติดต่อฝ่าย IT | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
+              <p>หากมีข้อสงสัยกรุณาติดต่อแผนก HR&GA | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
             </div>
           </div>
         </body>
@@ -133,9 +135,9 @@ const emailService = {
       console.log('HRGA Manager email not found. Skipping email notification.');
     }
   },
-  
+
   sendApprovalNotificationToAdmin: async (request, approver, admin) => {
-    const subject = "แจ้งเตือน: คำขอซ่อมได้รับการอนุมัติจาก HRGA Manager";
+    const subject = "แจ้งเตือน: มีใบแจ้งซ่อมทั่วไปได้รับการอนุมัติจาก HR&GA Manager";
     const html = `
     <html>
       <head>
@@ -180,7 +182,7 @@ const emailService = {
             </p>
           </div>
           <div class="footer">
-            <p>หากมีข้อสงสัยกรุณาติดต่อฝ่าย IT | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
+            <p>หากมีข้อสงสัยกรุณาติดต่อแผนก HR&GA | © ${new Date().getFullYear()} MINIBEA ACCESSOLUTIONS THAI LTD.</p>
           </div>
         </div>
       </body>

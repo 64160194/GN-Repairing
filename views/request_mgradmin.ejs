@@ -58,25 +58,23 @@
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card-body">
-                            <table id="datatablesSimple" class="table table-striped table-hover">
+                            <table id="datatablesSimple" class="table table-striped table-hover table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>เลขที่คำขอ</th>
-                                        <th>วันที่แจ้ง</th>
-                                        <th>ผู้แจ้ง</th>
-                                        <th>แผนก</th>
-                                        <th>อาการ</th>
-                                        <th>สถานที่</th>
-                                        <th>สถานะ</th>
-                                        <th>การดำเนินการ</th>
+                                        <th>Date Reported</th>
+                                        <th>Requester</th>
+                                        <th>Dept.</th>
+                                        <th>Issue</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <% requests.forEach(function(request) { %>
                                         <% if (request.app_mgr === 'approve') { %>
                                             <tr>
-                                                <td><%= request.req_id %></td>
-                                                <td><%= new Date(request.date_time).toLocaleString('th-TH') %></td>
+                                                <td><%= new Date(request.date_time).toLocaleDateString('th-TH') %></td>
                                                 <td><%= request.f_name %> <%= request.l_name %></td>
                                                 <td><%= request.dept_name %></td>
                                                 <td><%= request.repair_item %></td>
@@ -93,7 +91,7 @@
                                                     <% } %>
                                                 </td>
                                                 <td>
-                                                    <a href="/request_mgradmin/view/<%= request.req_id %>" class="btn btn-primary btn-sm">ดูรายละเอียด</a>
+                                                    <a href="/request_mgradmin/view/<%= request.req_id %>" class="btn btn-primary btn-sm">view</a>
                                                 </td>
                                             </tr>
                                         <% } %>
