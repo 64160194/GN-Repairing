@@ -42,6 +42,23 @@ const RequestMgrAdminModel = {
     });
   },
 
+  getUserByRoleId: (roleId) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        SELECT * FROM tbl_users
+        WHERE role_id = ?
+        LIMIT 1
+      `;
+
+      db.query(query, [roleId], (error, results) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(results[0] || null);
+      });
+    });
+  },
+
   updateApprovalStatus: (reqId, status) => {
     return new Promise((resolve, reject) => {
       const query = `

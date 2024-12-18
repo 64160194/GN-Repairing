@@ -1,4 +1,5 @@
 const requestMgrAdminModel = require('../models/requestMgrAdminModel');
+const emailService = require('../services/emailService');
 
 const requestMgrAdminController = {
     showRequestMgrAdminPage: async (req, res) => {
@@ -27,29 +28,35 @@ const requestMgrAdminController = {
 
     handleRequest: async (req, res) => {
         try {
-            const { req_id, action } = req.body;
-            console.log('Received request:', { req_id, action });
-    
-            if (!req_id || !action) {
-                console.log('Missing req_id or action in request body');
-                return res.status(400).json({ success: false, message: 'Missing required parameters' });
+          const { req_id, action } = req.body;
+          const status = action === 'approve' ? 'approve' : 'reject';
+          
+          const result = await requestMgrAdminModel.updateApprovalStatus(req_id, status);
+          
+          if (result) {
+            if (status === 'approve') {
+              // Fetch the request details
+              const request = await requestMgrAdminModel.getRequestById(req_id);
+              
+              // Fetch the approver details (current user)
+              const approver = req.user;
+              
+              // Fetch admin user (assuming role_id 1 is for admin)
+              const admin = await requestMgrAdminModel.getUserByRoleId(1);
+              
+              // Send email notification
+              await emailService.sendApprovalNotificationToAdmin(request, approver, admin);
             }
-    
-            // Make sure to use the correct model name (lowercase 'r')
-            const result = await requestMgrAdminModel.updateApprovalStatus(req_id, action);
             
-            if (result) {
-                console.log(`Successfully processed ${action} for req_id: ${req_id}`);
-                res.json({ success: true, message: `Request ${action}ed successfully` });
-            } else {
-                console.log(`Failed to process ${action} for req_id: ${req_id}`);
-                res.status(400).json({ success: false, message: 'Failed to update request status' });
-            }
+            res.json({ success: true, message: `Request ${status}d successfully` });
+          } else {
+            res.json({ success: false, message: 'Failed to update request status' });
+          }
         } catch (error) {
-            console.error('Error in handleRequest:', error);
-            res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
+          console.error('Error handling request:', error);
+          res.status(500).json({ success: false, message: 'An error occurred while processing the request' });
         }
-    },
+      },
 
     approveRequest: async (req, res) => {
         try {
