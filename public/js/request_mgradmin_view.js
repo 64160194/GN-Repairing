@@ -58,23 +58,28 @@ async function handleRequest(reqId, action) {
         const result = await response.json();
 
         if (result.success) {
-            Swal.fire({
+            await Swal.fire({
                 icon: 'success',
-                title: action === 'approve' ? 'Request Approved' : 'Request Rejected',
-                text: result.message,
-            }).then(() => {
-                // Update the UI with the new data
-                updateUIWithNewData(result.updatedRequest);
+                title: action === 'approve' ? 'Approval successful.' : 'Rejection successful.',
+                text: action === 'approve' ? 'Request has been approved.' : 'The request has been rejected.',
+                confirmButtonText: 'Okay!'
             });
+
+            // Update UI
+            updateUI(action);
+
+            // Redirect to request_mgradmin page
+            window.location.href = '/request_mgradmin';
         } else {
             throw new Error(result.message || 'An error occurred');
         }
     } catch (error) {
         console.error('Error:', error);
-        Swal.fire({
+        await Swal.fire({
             icon: 'error',
             title: 'Error',
             text: error.message,
+            confirmButtonText: 'Okay'
         });
     }
 }
