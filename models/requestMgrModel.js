@@ -164,18 +164,28 @@ const requestMgrModel = {
       return new Promise(async (resolve, reject) => {
           try {
               console.log('Processing request:', { req_id, is_approved });
-  
+              
               await db.beginTransaction();
   
-              const updateResult = await requestMgrModel.updateRequestStatus(req_id, is_approved);
+              let status;
+              if (is_approved === true || is_approved === 'true' || is_approved === 1 || is_approved === '1') {
+                  status = ApprovalStatus.APPROVE;
+              } else if (is_approved === false || is_approved === 'false' || is_approved === 0 || is_approved === '0') {
+                  status = ApprovalStatus.REJECT;
+              } else {
+                  throw new Error('Invalid is_approved value');
+              }
+              console.log('Setting status to:', status);
+  
+              const updateResult = await requestMgrModel.updateRequestStatus(req_id, status);
               if (!updateResult) {
                   throw new Error('Failed to update request status');
               }
   
               await db.commit();
   
-              const status = is_approved ? 'อนุมัติ' : 'ปฏิเสธ';
-              resolve({ success: true, message: `คำขอซ่อมได้ถูก${status}เรียบร้อยแล้ว` });
+              const message = status === ApprovalStatus.APPROVE ? 'คำขอซ่อมได้รับการอนุมัติเรียบร้อยแล้ว' : 'คำขอซ่อมถูกปฏิเสธเรียบร้อยแล้ว';
+              resolve({ success: true, message: message });
           } catch (error) {
               await db.rollback();
               console.error('Error in handleRequest:', error);
@@ -211,6 +221,29 @@ const requestMgrModel = {
           reject(error);
         } else {
           resolve(results[0] || null);
+        }
+      });
+    });
+  },
+
+  updateApprovalStatus: (req_id, status) => {
+    return new Promise((resolve, reject) => {
+      const query = `
+        UPDATE tbl_approve a
+        JOIN tbl_requests r ON a.approve_id = r.approve_id
+        SET a.app_mgr = ?
+        WHERE r.req_id = ?
+      `;
+      db.query(query, [status, req_id], (error, results) => {
+        if (error) {
+          console.error('Error updating approval status:', error);
+          reject({ success: false, message: 'Failed to update approval status' });
+        } else {
+          if (results.affectedRows > 0) {
+            resolve({ success: true, message: 'Approval status updated successfully' });
+          } else {
+            reject({ success: false, message: 'No matching record found for update' });
+          }
         }
       });
     });

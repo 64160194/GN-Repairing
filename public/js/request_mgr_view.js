@@ -1,60 +1,3 @@
-
-function approveRequest(reqId) {
-    if (confirm('Are you sure you want to approve this repair request ?')) {
-        fetch(`/request_mgr/approve/${reqId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('The repair request has been successfully approved.');
-                    window.location.href = '/request_mgr';
-                } else {
-                    alert('An error occurred while approving the repair request.');
-                }
-            });
-    }
-}
-
-function rejectRequest(reqId) {
-    if (confirm('Are you sure you want to reject this repair request?')) {
-        fetch(`/request_mgr/reject/${reqId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('The repair request has been successfully rejected.');
-                    window.location.href = '/request_mgr';
-                } else {
-                    alert('An error occurred while rejecting the repair request.');
-                }
-            });
-    }
-}
-
-function handleRequest(reqId, isApproved) {
-    fetch('/request_mgr/handle_request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            req_id: reqId,
-            is_approved: isApproved
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            window.location.href = '/request_mgr';
-        } else {
-            alert('An error occurred.: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while submitting the request.');
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     const images = document.querySelectorAll('.clickable-image');
     const modal = new bootstrap.Modal(document.getElementById('imageModal'));
@@ -68,12 +11,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-async function handleRequest(reqId, isApproved) {
-    console.log('Handling request:', reqId, 'isApproved:', isApproved);
-    
-    // Disable buttons to prevent multiple submissions
-    document.querySelectorAll('button').forEach(btn => btn.disabled = true);
+function approveRequest(reqId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to approve this request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, approve it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            handleRequest(reqId, true);
+        }
+    });
+}
 
+function rejectRequest(reqId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to reject this request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, reject it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            handleRequest(reqId, false);
+        }
+    });
+}
+
+async function handleRequest(reqId, isApproved) {
     try {
         const response = await fetch('/request_mgr/handle_request', {
             method: 'POST',
@@ -95,21 +65,17 @@ async function handleRequest(reqId, isApproved) {
                 text: isApproved ? 'Request has been approved.' : 'The request has been rejected.',
                 confirmButtonText: 'Okay!'
             });
-
             window.location.href = '/request_mgr';
         } else {
-            throw new Error(data.message || 'An unknown error occurred.');
+            throw new Error(data.message || 'An error occurred');
         }
     } catch (error) {
         console.error('Error:', error);
-        await Swal.fire({
+        Swal.fire({
             icon: 'error',
-            title: 'An error occurred.',
-            text: error.message || 'An error occurred during the operation.',
-            confirmButtonText: 'Okay!'
+            title: 'Oops...',
+            text: error.message || 'Something went wrong!',
         });
-    } finally {
-        document.querySelectorAll('button').forEach(btn => btn.disabled = false);
     }
 }
 
@@ -124,39 +90,5 @@ function updateUI(isApproved) {
         buttonContainer.innerHTML = '<button class="btn btn-success me-2" disabled>Approved</button>';
     } else {
         buttonContainer.innerHTML = '<button class="btn btn-danger" disabled>Rejected</button>';
-    }
-}
-
-async function approveRequest(reqId) {
-    const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: "Are you sure you want to approve this repair request?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, approve it!',
-        cancelButtonText: 'Cancel'
-    });
-
-    if (result.isConfirmed) {
-        await handleRequest(reqId, true);
-    }
-}
-
-async function rejectRequest(reqId) {
-    const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: "You want to reject this repair request?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, reject it.!',
-        cancelButtonText: 'Cancel'
-    });
-
-    if (result.isConfirmed) {
-        await handleRequest(reqId, false);
     }
 }
