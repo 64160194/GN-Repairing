@@ -236,8 +236,8 @@
                                                 <label for="survey_results" class="form-label">Survey Results <small class="text-muted">(ผลการตรวจสอบ)</small></label>
                                                 <select class="form-select" id="survey_results" name="survey_results" required>
                                                     <option value="">Select survey result</option>
-                                                    <option value="can be fix">Can be fixed <small class="text-muted">(สามารถแก้ไขได้)</small></option>
-                                                    <option value="can't fix">Can't fix <small class="text-muted">(ไม่สามารถแก้ไขได้)</small></option>
+                                                    <option value="Can be fixed">Can be fixed (สามารถแก้ไขได้)</option>
+                                                    <option value="Can't fix">Can't fix (ไม่สามารถแก้ไขได้)</option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
@@ -252,9 +252,14 @@
                                                 <div class="col-md-6">
                                                     <label for="time_taken" class="form-label">Time Taken <small class="text-muted">(เวลาที่ใช้)</small></label>
                                                     <div class="input-group">
-                                                        <input type="text" class="form-control" id="time_taken" name="time_taken">
-                                                        <span class="input-group-text">Hour</span>
+                                                        <input type="number" class="form-control" id="time_taken_hours" name="time_taken_hours" min="0" placeholder="Hours">
+                                                        <span class="input-group-text">Hours</span>
+                                                        <select class="form-select" id="time_taken_minutes" name="time_taken_minutes" style="max-width: 100px;">
+                                                            <option value="0">0 min</option>
+                                                            <option value="30">30 min</option>
+                                                        </select>
                                                     </div>
+                                                    <input type="hidden" id="time_taken" name="time_taken">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
