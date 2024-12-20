@@ -62,9 +62,6 @@ app.get('/api/department-requests', reportIssueController.getDepartmentRequestsD
 const reportIssueRoutes = require('./routes/reportIssueRoutes');
 app.use('/report_issue', reportIssueRoutes);
 
-const maintenanceWorkerRoutes = require('./routes/maintenanceWorkerRoutes');
-app.use('/maintenance_worker', maintenanceWorkerRoutes);
-
 app.listen(port, () => {
     console.log(`http://localhost:${port}`);
   });

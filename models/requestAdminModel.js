@@ -91,7 +91,27 @@ const RequestAdminModel = {
                 }
             });
         });
+    },
+
+    updateRequest: (req_id, survey_results, edit_details, date_by, time_taken, edit_by, budget_by) => {
+      return new Promise((resolve, reject) => {
+        const updateWorkerQuery = `
+          UPDATE tbl_worker
+          SET survey_results = ?, edit_details = ?, date_by = ?, time_taken = ?, edit_by = ?, budget_by = ?
+          WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
+        `;
+    
+        db.query(updateWorkerQuery, [survey_results, edit_details, date_by, time_taken, edit_by, budget_by, req_id], (error, results) => {
+          if (error) {
+            console.error('Error in updateRequest:', error);
+            reject(error);
+          } else {
+            resolve(results.affectedRows > 0);
+          }
+        });
+      });
     }
+
 };
 
 module.exports = RequestAdminModel;

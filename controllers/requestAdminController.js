@@ -30,7 +30,41 @@ const requestAdminController = {
       console.error('Error in viewRequest:', error);
       res.status(500).render('error', { message: 'An error occurred while loading the request details.', error: error.message });
     }
+  },
+
+  updateRequest: async (req, res) => {
+    try {
+      const {
+        req_id,
+        survey_results,
+        edit_details,
+        date_by,
+        time_taken,
+        edit_by,
+        budget_by
+      } = req.body;
+
+      const result = await RequestAdminModel.updateRequest(
+        req_id,
+        survey_results,
+        edit_details,
+        date_by,
+        time_taken,
+        edit_by,
+        budget_by
+      );
+
+      if (result) {
+        res.json({ success: true, message: 'Request updated successfully' });
+      } else {
+        res.status(404).json({ success: false, message: 'Request not found or update failed' });
+      }
+    } catch (error) {
+      console.error('Error in updateRequest:', error);
+      res.status(500).json({ success: false, message: 'An error occurred while updating the request', error: error.message });
+    }
   }
+  
 };
 
 module.exports = requestAdminController;

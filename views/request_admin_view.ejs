@@ -230,54 +230,49 @@
                                         For Admin
                                     </div>
                                     <div class="card-body">
-                                        <form action="/maintenance_worker/add" method="POST">
+                                        <form action="/request_admin/update" method="POST">
+                                            <input type="hidden" name="req_id" value="<%= request.req_id %>">
                                             <div class="mb-3">
-                                                <label for="suervery_results" class="form-label">Survey Results <small
-                                                        class="text-muted">(ผลการตรวจสอบ)</small></label>
-                                                <select class="form-select" id="suervery_results"
-                                                    name="suervery_results" required>
+                                                <label for="survey_results" class="form-label">Survey Results <small class="text-muted">(ผลการตรวจสอบ)</small></label>
+                                                <select class="form-select" id="survey_results" name="survey_results" required>
                                                     <option value="">Select survey result</option>
-                                                    <option value="can be fix">Can be fixed <small
-                                                            class="text-muted">(สามารถแก้ไขได้)</small></option>
-                                                    <option value="can't fix">Can't fix <small
-                                                            class="text-muted">(ไม่สามารถแก้ไขได้)</small></option>
+                                                    <option value="can be fix">Can be fixed <small class="text-muted">(สามารถแก้ไขได้)</small></option>
+                                                    <option value="can't fix">Can't fix <small class="text-muted">(ไม่สามารถแก้ไขได้)</small></option>
                                                 </select>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="edit_details" class="form-label">Edit Details <small
-                                                        class="text-muted">(รายละเอียดการแก้ไข)</small></label>
-                                                <textarea class="form-control" id="edit_details" name="edit_details"
-                                                    rows="3"></textarea>
+                                                <label for="edit_details" class="form-label">Edit Details <small class="text-muted">(รายละเอียดการแก้ไข)</small></label>
+                                                <textarea class="form-control" id="edit_details" name="edit_details" rows="3"></textarea>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="finish_date" class="form-label">Completion Date <small
-                                                        class="text-muted">(วันที่งานเสร็จสิ้น)</small></label>
-                                                <input type="date" class="form-control" id="finish_date"
-                                                    name="finish_date">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="time_taken" class="form-label">Time Taken <small
-                                                        class="text-muted">(เวลาที่ใช้)</small></label>
-                                                <div class="d-flex align-items-center">
-                                                    <input type="text" class="form-control" id="time_taken"
-                                                        name="time_taken" style="width: 120%;">
-                                                    <span class="ms-2">ชั่วโมง</span>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="date_by" class="form-label">Completion Date <small class="text-muted">(วันที่งานเสร็จสิ้น)</small></label>
+                                                    <input type="date" class="form-control" id="date_by" name="date_by">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="time_taken" class="form-label">Time Taken <small class="text-muted">(เวลาที่ใช้)</small></label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="time_taken" name="time_taken">
+                                                        <span class="input-group-text">Hour</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="edit_by" class="form-label">Repaired By <small
-                                                        class="text-muted">(แก้ไขโดย)</small></label>
-                                                <select class="form-select" id="edit_by" name="edit_by" required>
-                                                    <option value="">Select Repairer</option>
-                                                    <option value="admin">Admin</option>
-                                                    <option value="maker">Maker</option>
-                                                </select>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="budget_by" class="form-label">Budget <small
-                                                        class="text-muted">(งบประมาณ)</small></label>
-                                                <input type="number" class="form-control" id="budget_by"
-                                                    name="budget_by" step="1" min="0" placeholder="Enter amount">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="edit_by" class="form-label">Repaired By <small class="text-muted">(แก้ไขโดย)</small></label>
+                                                    <select class="form-select" id="edit_by" name="edit_by" required>
+                                                        <option value="">Select Repairer</option>
+                                                        <option value="admin">Admin</option>
+                                                        <option value="maker">Maker</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="budget_by" class="form-label">Budget <small class="text-muted">(งบประมาณ)</small></label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" id="budget_by" name="budget_by" step="1" min="0" placeholder="Enter amount">
+                                                        <span class="input-group-text">Baht</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="d-flex justify-content-end">
                                                 <button type="submit" class="btn btn-primary">Save</button>

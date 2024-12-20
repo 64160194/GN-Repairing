@@ -6,5 +6,6 @@ const requestAdminController = require('../controllers/requestAdminController');
 
 router.get('/', authMiddleware, roleMiddleware(1), requestAdminController.showRequestAdmin);
 router.get('/view/:id', authMiddleware, roleMiddleware(1), requestAdminController.viewRequest);
+router.post('/update', authMiddleware, roleMiddleware(1), requestAdminController.updateRequest);
 
 module.exports = router;
