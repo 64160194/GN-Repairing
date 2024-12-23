@@ -37,7 +37,7 @@ const requestAdminController = {
       const {
         req_id,
         survey_results,
-        work_cause,  // เปลี่ยนจาก work_case เป็น work_cause
+        work_cause,
         edit_details,
         date_by,
         time_taken,
@@ -45,21 +45,46 @@ const requestAdminController = {
         budget_by
       } = req.body;
   
-      const result = await RequestAdminModel.updateRequest(
-        req_id,
+      // สร้าง object สำหรับข้อมูลที่จะอัปเดต
+      const updateData = {
         survey_results,
-        work_cause,  // เปลี่ยนจาก work_case เป็น work_cause
+        work_cause,
         edit_details,
         date_by,
         time_taken,
         edit_by,
         budget_by
+      };
+  
+      // กรองเอาเฉพาะข้อมูลที่มีค่า
+      Object.keys(updateData).forEach(key => 
+        (updateData[key] === undefined || updateData[key] === '') && delete updateData[key]
       );
   
-      if (result) {
-        res.json({ success: true, message: 'Request updated successfully' });
-      } else {
-        res.status(404).json({ success: false, message: 'Request not found or update failed' });
+      // เริ่ม transaction
+      await RequestAdminModel.beginTransaction();
+  
+      try {
+        // อัปเดตข้อมูลในตาราง requests
+        const result = await RequestAdminModel.updateRequest(req_id, updateData);
+  
+        if (result) {
+          // อัปเดต worker_status ในตาราง tbl_worker
+          await RequestAdminModel.updateWorkerStatus(req_id, 1);
+  
+          // Commit transaction
+          await RequestAdminModel.commitTransaction();
+  
+          res.json({ success: true, message: 'Request updated successfully and worker status changed' });
+        } else {
+          // Rollback transaction ถ้าไม่สามารถอัปเดต request ได้
+          await RequestAdminModel.rollbackTransaction();
+          res.status(404).json({ success: false, message: 'Request not found or update failed' });
+        }
+      } catch (error) {
+        // Rollback transaction ถ้าเกิดข้อผิดพลาดระหว่างการอัปเดต
+        await RequestAdminModel.rollbackTransaction();
+        throw error;
       }
     } catch (error) {
       console.error('Error in updateRequest:', error);

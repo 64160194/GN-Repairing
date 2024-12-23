@@ -93,23 +93,115 @@ const RequestAdminModel = {
         });
     },
 
-    updateRequest: (req_id, survey_results, work_cause, edit_details, date_by, time_taken, edit_by, budget_by) => {
-      return new Promise((resolve, reject) => {
-        const updateWorkerQuery = `
-          UPDATE tbl_worker
-          SET survey_results = ?, work_cause = ?, edit_details = ?, date_by = ?, finish_time = ?, edit_by = ?, budget_by = ?
-          WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
-        `;
-        
-        db.query(updateWorkerQuery, [survey_results, work_cause, edit_details, date_by, time_taken, edit_by, budget_by, req_id], (error, result) => {
-          if (error) {
-            console.error('Error in updateRequest:', error);
-            reject(error);
-          } else {
-            resolve(result.affectedRows > 0);
-          }
+    beginTransaction: () => {
+        return new Promise((resolve, reject) => {
+            db.beginTransaction((err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
         });
-      });
+    },
+
+    commitTransaction: () => {
+        return new Promise((resolve, reject) => {
+            db.commit((err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    },
+
+    rollbackTransaction: () => {
+        return new Promise((resolve, reject) => {
+            db.rollback(() => {
+                resolve();
+            });
+        });
+    },
+
+    updateRequest: (req_id, updateData) => {
+        return new Promise((resolve, reject) => {
+            // สร้างอาร์เรย์สำหรับเก็บคอลัมน์และค่าที่จะอัปเดต
+            const columns = [];
+            const values = [];
+    
+            // ตรวจสอบและเพิ่มข้อมูลที่จะอัปเดตเข้าไปในอาร์เรย์
+            if (updateData.survey_results !== undefined) {
+                columns.push('survey_results = ?');
+                values.push(updateData.survey_results);
+            }
+            if (updateData.work_cause !== undefined) {
+                columns.push('work_cause = ?');
+                values.push(updateData.work_cause);
+            }
+            if (updateData.edit_details !== undefined) {
+                columns.push('edit_details = ?');
+                values.push(updateData.edit_details);
+            }
+            if (updateData.date_by !== undefined) {
+                columns.push('date_by = ?');
+                values.push(updateData.date_by);
+            }
+            if (updateData.time_taken !== undefined) {
+                columns.push('finish_time = ?');
+                values.push(updateData.time_taken);
+            }
+            if (updateData.edit_by !== undefined) {
+                columns.push('edit_by = ?');
+                values.push(updateData.edit_by);
+            }
+            if (updateData.budget_by !== undefined) {
+                columns.push('budget_by = ?');
+                values.push(updateData.budget_by);
+            }
+    
+            // ถ้าไม่มีข้อมูลที่จะอัปเดต ให้ resolve ทันที
+            if (columns.length === 0) {
+                return resolve(true);
+            }
+    
+            // สร้าง SQL query
+            const updateWorkerQuery = `
+                UPDATE tbl_worker
+                SET ${columns.join(', ')}
+                WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
+            `;
+    
+            // เพิ่ม req_id เข้าไปใน values array
+            values.push(req_id);
+    
+            db.query(updateWorkerQuery, values, (error, result) => {
+                if (error) {
+                    console.error('Error in updateRequest:', error);
+                    reject(error);
+                } else {
+                    resolve(result.affectedRows > 0);
+                }
+            });
+        });
+    },
+
+    updateWorkerStatus: (req_id, status) => {
+        return new Promise((resolve, reject) => {
+            const query = `
+                UPDATE tbl_worker
+                SET worker_status = ?
+                WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
+            `;
+            db.query(query, [status, req_id], (error, result) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(result.affectedRows > 0);
+                }
+            });
+        });
     },
 
 };
