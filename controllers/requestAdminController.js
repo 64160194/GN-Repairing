@@ -19,12 +19,15 @@ const requestAdminController = {
       if (!request) {
         return res.status(404).render('error', { message: 'Request not found.' });
       }
-
-      // Check if the request is approved by both manager and HR/GA
-      if (request.app_mgr !== 'approve' || request.app_hrga !== 'approve') {
-        return res.status(403).render('error', { message: 'This request has not been fully approved yet.' });
+  
+      const workerInfo = await RequestAdminModel.getWorkerInfoByRequestId(requestId);
+      request.worker = workerInfo;
+  
+      // ตรวจสอบว่า worker_status มีอยู่ใน request หรือไม่
+      if (!request.worker_status && workerInfo && workerInfo.worker_status) {
+        request.worker_status = workerInfo.worker_status;
       }
-
+  
       res.render('request_admin_view', { request, user: req.user });
     } catch (error) {
       console.error('Error in viewRequest:', error);
@@ -40,7 +43,7 @@ const requestAdminController = {
         work_cause,
         edit_details,
         date_by,
-        time_taken,
+        finish_time,  // เปลี่ยนจาก time_taken เป็น finish_time
         edit_by,
         budget_by
       } = req.body;
@@ -51,7 +54,7 @@ const requestAdminController = {
         work_cause,
         edit_details,
         date_by,
-        time_taken,
+        finish_time,  // เปลี่ยนจาก time_taken เป็น finish_time
         edit_by,
         budget_by
       };
@@ -60,6 +63,17 @@ const requestAdminController = {
       Object.keys(updateData).forEach(key => 
         (updateData[key] === undefined || updateData[key] === '') && delete updateData[key]
       );
+  
+      // เพิ่มการตรวจสอบและแปลงค่า finish_time ถ้าจำเป็น
+      if (updateData.finish_time) {
+        // ตรวจสอบว่า finish_time เป็นรูปแบบวันที่และเวลาที่ถูกต้อง
+        const finishDate = new Date(updateData.finish_time);
+        if (isNaN(finishDate.getTime())) {
+          throw new Error('Invalid finish_time format');
+        }
+        // แปลงเป็นรูปแบบที่ MySQL รองรับ (YYYY-MM-DD HH:MM:SS)
+        updateData.finish_time = finishDate.toISOString().slice(0, 19).replace('T', ' ');
+      }
   
       // เริ่ม transaction
       await RequestAdminModel.beginTransaction();

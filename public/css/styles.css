@@ -101,6 +101,13 @@ body, html {
   font-size: 14px;
 }
 
+.th-small {
+    width: 30%;
+}
+.td-large {
+    width: 70%;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   :root {
     scroll-behavior: smooth;

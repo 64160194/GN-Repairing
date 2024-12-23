@@ -217,101 +217,225 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row" style="margin-top: 1rem;">
-                            <div class="col-xl-12">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-tools me-1"></i>
-                                        For Admin
-                                    </div>
-                                    <div class="card-body">
-                                        <form action="/request_admin/update" method="POST">
-                                            <input type="hidden" name="req_id" value="<%= request.req_id %>">
-                                            <div class="mb-3">
-                                                <label for="survey_results" class="form-label">Survey Results <small class="text-muted">(ผลการตรวจสอบ)</small></label>
-                                                <select class="form-select" id="survey_results" name="survey_results" required>
-                                                    <option value="">Select survey result</option>
-                                                    <option value="Can be fixed">Can be fixed (สามารถแก้ไขได้)</option>
-                                                    <option value="Can't fix">Can't fix (ไม่สามารถแก้ไขได้)</option>
-                                                </select>
+                            <% if (request.worker_status !==1) { %>
+                                <div class="row" style="margin-top: 1rem;">
+                                    <div class="col-xl-12">
+                                        <div class="card mb-4">
+                                            <div class="card-header">
+                                                <i class="fas fa-tools me-1"></i>
+                                                For Admin
                                             </div>
-                                            <div class="mb-3">
-                                                <label for="work_cause" class="form-label">Work Cause <small class="text-muted">(สาเหตุการชำรุด/ เหตุผล)</small></label>
-                                                <textarea class="form-control" id="work_cause" name="work_cause" rows="2"></textarea>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="edit_details" class="form-label">Edit Details <small class="text-muted">(รายละเอียดการแก้ไข)</small></label>
-                                                <textarea class="form-control" id="edit_details" name="edit_details" rows="3"></textarea>
-                                            </div>
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <label for="date_by" class="form-label">Completion Date <small class="text-muted">(วันที่งานเสร็จสิ้น)</small></label>
-                                                    <input type="date" class="form-control" id="date_by" name="date_by">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="time_taken" class="form-label">Time Taken <small class="text-muted">(เวลาที่ใช้)</small></label>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control" id="time_taken_hours" name="time_taken_hours" min="0" placeholder="Hours">
-                                                        <span class="input-group-text">Hours</span>
-                                                        <select class="form-select" id="time_taken_minutes" name="time_taken_minutes" style="max-width: 100px;">
-                                                            <option value="0">0 min</option>
-                                                            <option value="30">30 min</option>
+                                            <div class="card-body">
+                                                <form action="/request_admin/update" method="POST">
+                                                    <input type="hidden" name="req_id" value="<%= request.req_id %>">
+                                                    <div class="mb-3">
+                                                        <label for="survey_results" class="form-label">Survey Results
+                                                            <small class="text-muted">(ผลการตรวจสอบ)</small></label>
+                                                        <select class="form-select" id="survey_results"
+                                                            name="survey_results" required>
+                                                            <option value="">Select survey result</option>
+                                                            <option value="Can be fixed">Can be fixed (สามารถแก้ไขได้)
+                                                            </option>
+                                                            <option value="Can't fix">Can't fix (ไม่สามารถแก้ไขได้)
+                                                            </option>
                                                         </select>
                                                     </div>
-                                                    <input type="hidden" id="time_taken" name="time_taken">
-                                                </div>
+                                                    <div class="mb-3">
+                                                        <label for="work_cause" class="form-label">Work Cause <small
+                                                                class="text-muted">(สาเหตุการชำรุด/
+                                                                เหตุผล)</small></label>
+                                                        <textarea class="form-control" id="work_cause" name="work_cause"
+                                                            rows="2"></textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="edit_details" class="form-label">Edit Details <small
+                                                                class="text-muted">(รายละเอียดการแก้ไข)</small></label>
+                                                        <textarea class="form-control" id="edit_details"
+                                                            name="edit_details" rows="3"></textarea>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="date_by" class="form-label">Completion Date
+                                                                <small
+                                                                    class="text-muted">(วันที่งานเสร็จสิ้น)</small></label>
+                                                            <input type="date" class="form-control" id="date_by"
+                                                                name="date_by">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="time_taken" class="form-label">Time Taken <small
+                                                                    class="text-muted">(เวลาที่ใช้)</small></label>
+                                                            <div class="input-group">
+                                                                <input type="number" class="form-control"
+                                                                    id="time_taken_hours" name="time_taken_hours"
+                                                                    min="0" placeholder="Hours">
+                                                                <span class="input-group-text">Hours</span>
+                                                                <select class="form-select" id="time_taken_minutes"
+                                                                    name="time_taken_minutes" style="max-width: 100px;">
+                                                                    <option value="0">0 min</option>
+                                                                    <option value="30">30 min</option>
+                                                                </select>
+                                                            </div>
+                                                            <input type="hidden" id="time_taken" name="time_taken">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label for="edit_by" class="form-label">Repaired By <small
+                                                                    class="text-muted">(แก้ไขโดย)</small></label>
+                                                            <select class="form-select" id="edit_by" name="edit_by">
+                                                                <option value="">Select Repairer</option>
+                                                                <option value="admin">Admin</option>
+                                                                <option value="maker">Maker</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="budget_by" class="form-label">Budget <small
+                                                                    class="text-muted">(งบประมาณ)</small></label>
+                                                            <div class="input-group">
+                                                                <input type="number" class="form-control" id="budget_by"
+                                                                    name="budget_by" step="1" min="0"
+                                                                    placeholder="Enter amount">
+                                                                <span class="input-group-text">Baht</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-end">
+                                                        <button type="submit" class="btn btn-primary">Save</button>
+                                                    </div>
+                                                </form>
                                             </div>
-                                            <div class="row mb-3">
-                                                <div class="col-md-6">
-                                                    <label for="edit_by" class="form-label">Repaired By <small class="text-muted">(แก้ไขโดย)</small></label>
-                                                    <select class="form-select" id="edit_by" name="edit_by">
-                                                        <option value="">Select Repairer</option>
-                                                        <option value="admin">Admin</option>
-                                                        <option value="maker">Maker</option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="budget_by" class="form-label">Budget <small class="text-muted">(งบประมาณ)</small></label>
-                                                    <div class="input-group">
-                                                        <input type="number" class="form-control" id="budget_by" name="budget_by" step="1" min="0" placeholder="Enter amount">
-                                                        <span class="input-group-text">Baht</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+
+                                    <% if (request.worker_status !==0) { %>
+                                        <div class="row mt-4">
+                                            <div class="col-xl-12">
+                                                <div class="card mb-4">
+                                                    <div class="card-header">
+                                                        <i class="fas fa-hard-hat me-1"></i>
+                                                        Worker Information
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <% if (request.worker) { %>
+                                                            <table class="table table-bordered">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Survey Results
+                                                                            <small
+                                                                                class="text-muted">(ผลการตรวจสอบ)</small>
+                                                                        </th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.survey_results || '-' %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Work
+                                                                            Cause<small class="text-muted">
+                                                                                (สาเหตุการชำรุด/
+                                                                                เหตุผล)</small></th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.work_cause || '-' %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Edit
+                                                                            Details<small class="text-muted">
+                                                                                (รายละเอียดการแก้ไข)</small>
+                                                                        </th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.edit_details || '-' %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Completion
+                                                                            Date<small class="text-muted">
+                                                                                (วันที่งานเสร็จสิ้น)</small>
+                                                                        </th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.date_by ? new
+                                                                                Date(request.worker.date_by).toLocaleDateString('th-TH')
+                                                                                : '-' %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Time Taken<small class="text-muted"> (เวลาที่ใช้)</small></th>
+                                                                        <td class="td-large">
+                                                                            <% if (request.worker && request.worker.finish_time) { %>
+                                                                                <% 
+                                                                                    const totalMinutes = parseInt(request.worker.finish_time);
+                                                                                    const hours = Math.floor(totalMinutes / 60);
+                                                                                    const minutes = totalMinutes % 60;
+                                                                                    let timeString = '';
+                                                                                    if (hours > 0) {
+                                                                                        timeString += hours + ' ชม. ';
+                                                                                    }
+                                                                                    if (minutes > 0 || hours === 0) {
+                                                                                        timeString += minutes + ' น.';
+                                                                                    }
+                                                                                %>
+                                                                                <%= timeString %>
+                                                                            <% } else { %>
+                                                                                -
+                                                                            <% } %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Repaired
+                                                                            By<small class="text-muted">
+                                                                                (แก้ไขโดย)</small></th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.edit_by || '-' %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th scope="row" class="th-small">Budget<small
+                                                                                class="text-muted"> (งบประมาณ)</small>
+                                                                        </th>
+                                                                        <td class="td-large">
+                                                                            <%= request.worker.budget_by ?
+                                                                                `${request.worker.budget_by} Baht` : '-'
+                                                                                %>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <% } else { %>
+                                                                <p>No worker information available.</p>
+                                                                <% } %>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-primary">Save</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                        </div>
+                                        <% } %>
 
-                        <div class="row">
-                            <div class="col-md-12 text-end">
-                                <a href="/request_mgradmin" class="btn btn-secondary me-2">Back</a>
-                                <% if (request.app_admin===null || request.app_admin===undefined ||
-                                    request.app_admin==='' ) { %>
-                                    <button id="approveBtn" class="btn btn-success me-2"
-                                        onclick="approveRequest('<%= request.req_id %>')">Approve</button>
-                                    <button id="rejectBtn" class="btn btn-danger"
-                                        onclick="rejectRequest('<%= request.req_id %>')">Reject</button>
-                                    <% } else if (request.app_admin==='approve' ) { %>
-                                        <button id="approveBtn" class="btn btn-success me-2" disabled>Approved</button>
-                                        <% } else if (request.app_admin==='reject' ) { %>
-                                            <button id="rejectBtn" class="btn btn-danger" disabled>Rejected</button>
-                                            <% } else { %>
-                                                <p>Unknown status: <%= request.app_admin %>
-                                                </p>
-                                                <% } %>
-                            </div>
-                        </div>
-                        <br>
+                                            <div class="row">
+                                                <div class="col-md-12 text-end">
+                                                    <a href="/request_admin" class="btn btn-secondary me-2">Back</a>
+                                                    <% if (request.app_admin===null || request.app_admin===undefined ||
+                                                        request.app_admin==='' ) { %>
+                                                        <button id="approveBtn" class="btn btn-success me-2"
+                                                            onclick="approveRequest('<%= request.req_id %>')">Approve</button>
+                                                        <button id="rejectBtn" class="btn btn-danger"
+                                                            onclick="rejectRequest('<%= request.req_id %>')">Reject</button>
+                                                        <% } else if (request.app_admin==='approve' ) { %>
+                                                            <button id="approveBtn" class="btn btn-success me-2"
+                                                                disabled>Approved</button>
+                                                            <% } else if (request.app_admin==='reject' ) { %>
+                                                                <button id="rejectBtn" class="btn btn-danger"
+                                                                    disabled>Rejected</button>
+                                                                <% } else { %>
+                                                                    <p>Unknown status: <%= request.app_admin %>
+                                                                    </p>
+                                                                    <% } %>
+                                                </div>
+                                            </div>
+                                            <br>
                     </div>
                 </div>
             </div>
