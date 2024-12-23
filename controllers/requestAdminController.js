@@ -43,60 +43,83 @@ const requestAdminController = {
         work_cause,
         edit_details,
         date_by,
-        finish_time,  // เปลี่ยนจาก time_taken เป็น finish_time
+        finish_time,
         edit_by,
         budget_by
       } = req.body;
   
-      // สร้าง object สำหรับข้อมูลที่จะอัปเดต
       const updateData = {
         survey_results,
         work_cause,
         edit_details,
         date_by,
-        finish_time,  // เปลี่ยนจาก time_taken เป็น finish_time
+        finish_time,
         edit_by,
         budget_by
       };
   
-      // กรองเอาเฉพาะข้อมูลที่มีค่า
       Object.keys(updateData).forEach(key => 
         (updateData[key] === undefined || updateData[key] === '') && delete updateData[key]
       );
   
-      // เพิ่มการตรวจสอบและแปลงค่า finish_time ถ้าจำเป็น
-      if (updateData.finish_time) {
-        // ตรวจสอบว่า finish_time เป็นรูปแบบวันที่และเวลาที่ถูกต้อง
-        const finishDate = new Date(updateData.finish_time);
-        if (isNaN(finishDate.getTime())) {
-          throw new Error('Invalid finish_time format');
+      if (updateData.date_by) {
+        if (updateData.date_by.trim() === '') {
+          updateData.date_by = null;
+        } else {
+          const finishDate = new Date(updateData.date_by);
+          if (!isNaN(finishDate.getTime())) {
+            updateData.date_by = finishDate.toISOString().split('T')[0];
+          } else {
+            console.error('Invalid date_by format:', updateData.date_by);
+            updateData.date_by = null;
+          }
         }
-        // แปลงเป็นรูปแบบที่ MySQL รองรับ (YYYY-MM-DD HH:MM:SS)
-        updateData.finish_time = finishDate.toISOString().slice(0, 19).replace('T', ' ');
       }
   
-      // เริ่ม transaction
+      if (finish_time !== undefined) {
+        if (finish_time.trim() === '') {
+          updateData.finish_time = null;
+        } else {
+          // ตรวจสอบว่าเป็นตัวเลขหรือไม่
+          if (!isNaN(finish_time)) {
+            // ถ้าเป็นตัวเลข ให้ใช้ค่านั้นเลย (เป็นนาที)
+            updateData.finish_time = parseInt(finish_time, 10);
+          } else {
+            // ถ้าไม่ใช่ตัวเลข ให้พยายามแปลงเป็นนาทีจากรูปแบบ HH:MM
+            const timeParts = finish_time.split(':');
+            if (timeParts.length === 2) {
+              const hours = parseInt(timeParts[0], 10);
+              const minutes = parseInt(timeParts[1], 10);
+              if (!isNaN(hours) && !isNaN(minutes)) {
+                updateData.finish_time = hours * 60 + minutes;
+              } else {
+                console.error('Invalid finish_time format:', finish_time);
+                updateData.finish_time = null;
+              }
+            } else {
+              console.error('Invalid finish_time format:', finish_time);
+              updateData.finish_time = null;
+            }
+          }
+        }
+      }
+  
+      console.log('Update data:', updateData);
+  
       await RequestAdminModel.beginTransaction();
   
       try {
-        // อัปเดตข้อมูลในตาราง requests
         const result = await RequestAdminModel.updateRequest(req_id, updateData);
   
         if (result) {
-          // อัปเดต worker_status ในตาราง tbl_worker
           await RequestAdminModel.updateWorkerStatus(req_id, 1);
-  
-          // Commit transaction
           await RequestAdminModel.commitTransaction();
-  
           res.json({ success: true, message: 'Request updated successfully and worker status changed' });
         } else {
-          // Rollback transaction ถ้าไม่สามารถอัปเดต request ได้
           await RequestAdminModel.rollbackTransaction();
           res.status(404).json({ success: false, message: 'Request not found or update failed' });
         }
       } catch (error) {
-        // Rollback transaction ถ้าเกิดข้อผิดพลาดระหว่างการอัปเดต
         await RequestAdminModel.rollbackTransaction();
         throw error;
       }

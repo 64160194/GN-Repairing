@@ -1,22 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
-    const timeTakenHours = document.getElementById('time_taken_hours');
-    const timeTakenMinutes = document.getElementById('time_taken_minutes');
-    const timeTakenHidden = document.getElementById('time_taken');
+    const finishTimeHours = document.getElementById('finish_time_hours');
+    const finishTimeMinutes = document.getElementById('finish_time_minutes');
+    const finishTimeHidden = document.getElementById('finish_time');
 
-    function updateTimeTaken() {
-        const hours = parseInt(timeTakenHours.value) || 0;
-        const minutes = parseInt(timeTakenMinutes.value) || 0;
+    function updateFinishTime() {
+        const hours = parseInt(finishTimeHours.value) || 0;
+        const minutes = parseInt(finishTimeMinutes.value) || 0;
         const totalMinutes = hours * 60 + minutes;
-        timeTakenHidden.value = totalMinutes.toString();
+        finishTimeHidden.value = totalMinutes.toString();
     }
 
-    timeTakenHours.addEventListener('change', updateTimeTaken);
-    timeTakenMinutes.addEventListener('change', updateTimeTaken);
+    finishTimeHours.addEventListener('change', updateFinishTime);
+    finishTimeMinutes.addEventListener('change', updateFinishTime);
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        updateTimeTaken();
+        updateFinishTime();
         this.submit();
     });
 });

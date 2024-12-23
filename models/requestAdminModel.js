@@ -130,61 +130,113 @@ const RequestAdminModel = {
 
     updateRequest: (req_id, updateData) => {
         return new Promise((resolve, reject) => {
-            // สร้างอาร์เรย์สำหรับเก็บคอลัมน์และค่าที่จะอัปเดต
-            const columns = [];
-            const values = [];
+            const workerColumns = [];
+            const workerValues = [];
+            const requestColumns = [];
+            const requestValues = [];
     
             // ตรวจสอบและเพิ่มข้อมูลที่จะอัปเดตเข้าไปในอาร์เรย์
             if (updateData.survey_results !== undefined) {
-                columns.push('survey_results = ?');
-                values.push(updateData.survey_results);
+                workerColumns.push('survey_results = ?');
+                workerValues.push(updateData.survey_results);
             }
             if (updateData.work_cause !== undefined) {
-                columns.push('work_cause = ?');
-                values.push(updateData.work_cause);
+                workerColumns.push('work_cause = ?');
+                workerValues.push(updateData.work_cause);
             }
             if (updateData.edit_details !== undefined) {
-                columns.push('edit_details = ?');
-                values.push(updateData.edit_details);
+                workerColumns.push('edit_details = ?');
+                workerValues.push(updateData.edit_details);
             }
             if (updateData.date_by !== undefined) {
-                columns.push('date_by = ?');
-                values.push(updateData.date_by);
+                workerColumns.push('date_by = ?');
+                workerValues.push(updateData.date_by);
             }
-            if (updateData.time_taken !== undefined) {
-                columns.push('finish_time = ?');
-                values.push(updateData.time_taken);
+            if (updateData.finish_time !== undefined) {
+                if (updateData.finish_time === null || updateData.finish_time === '') {
+                    workerColumns.push('finish_time = NULL');
+                } else {
+                    // แปลงเวลาเป็นนาที
+                    const finishTimeInMinutes = parseInt(updateData.finish_time);
+                    if (!isNaN(finishTimeInMinutes)) {
+                        workerColumns.push('finish_time = ?');
+                        workerValues.push(finishTimeInMinutes);
+                    } else {
+                        console.error('Invalid finish_time format:', updateData.finish_time);
+                        // อาจจะเพิ่มการจัดการข้อผิดพลาดเพิ่มเติมตามต้องการ
+                    }
+                }
             }
             if (updateData.edit_by !== undefined) {
-                columns.push('edit_by = ?');
-                values.push(updateData.edit_by);
+                workerColumns.push('edit_by = ?');
+                workerValues.push(updateData.edit_by);
             }
             if (updateData.budget_by !== undefined) {
-                columns.push('budget_by = ?');
-                values.push(updateData.budget_by);
+                workerColumns.push('budget_by = ?');
+                workerValues.push(updateData.budget_by);
+            }
+    
+            // เพิ่มการอัปเดตสถานะใน tbl_requests
+            if (updateData.status !== undefined) {
+                requestColumns.push('status = ?');
+                requestValues.push(updateData.status);
             }
     
             // ถ้าไม่มีข้อมูลที่จะอัปเดต ให้ resolve ทันที
-            if (columns.length === 0) {
+            if (workerColumns.length === 0 && requestColumns.length === 0) {
                 return resolve(true);
             }
     
-            // สร้าง SQL query
-            const updateWorkerQuery = `
-                UPDATE tbl_worker
-                SET ${columns.join(', ')}
-                WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
-            `;
+            // เริ่ม transaction
+            db.beginTransaction(async (err) => {
+                if (err) {
+                    return reject(err);
+                }
     
-            // เพิ่ม req_id เข้าไปใน values array
-            values.push(req_id);
+                try {
+                    // อัปเดต tbl_worker
+                    if (workerColumns.length > 0) {
+                        const updateWorkerQuery = `
+                            UPDATE tbl_worker
+                            SET ${workerColumns.join(', ')}
+                            WHERE worker_id = (SELECT worker_id FROM tbl_requests WHERE req_id = ?)
+                        `;
+                        await new Promise((resolve, reject) => {
+                            db.query(updateWorkerQuery, [...workerValues, req_id], (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            });
+                        });
+                    }
     
-            db.query(updateWorkerQuery, values, (error, result) => {
-                if (error) {
-                    console.error('Error in updateRequest:', error);
-                    reject(error);
-                } else {
-                    resolve(result.affectedRows > 0);
+                    // อัปเดต tbl_requests
+                    if (requestColumns.length > 0) {
+                        const updateRequestQuery = `
+                            UPDATE tbl_requests
+                            SET ${requestColumns.join(', ')}
+                            WHERE req_id = ?
+                        `;
+                        await new Promise((resolve, reject) => {
+                            db.query(updateRequestQuery, [...requestValues, req_id], (error, result) => {
+                                if (error) reject(error);
+                                else resolve(result);
+                            });
+                        });
+                    }
+    
+                    // Commit transaction
+                    db.commit((err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                reject(err);
+                            });
+                        }
+                        resolve(true);
+                    });
+                } catch (error) {
+                    db.rollback(() => {
+                        reject(error);
+                    });
                 }
             });
         });
