@@ -37,23 +37,25 @@ const requestAdminController = {
       const {
         req_id,
         survey_results,
+        work_cause,  // เปลี่ยนจาก work_case เป็น work_cause
         edit_details,
         date_by,
         time_taken,
         edit_by,
         budget_by
       } = req.body;
-
+  
       const result = await RequestAdminModel.updateRequest(
         req_id,
         survey_results,
+        work_cause,  // เปลี่ยนจาก work_case เป็น work_cause
         edit_details,
         date_by,
         time_taken,
         edit_by,
         budget_by
       );
-
+  
       if (result) {
         res.json({ success: true, message: 'Request updated successfully' });
       } else {
